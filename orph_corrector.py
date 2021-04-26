@@ -14,6 +14,9 @@ def corrector(text, type):
     text = text.replace("\u030A", "")
     text = text.replace("\u0022", "")
     text = text.replace("=", " ")
+    text = text.replace("-", " ")
+    if text[-1] == ".":
+        text[-1] = ""
     for i in range(len(text)):
         if type == "chern" and text[i] in chernetsov:
             for j in range(len(chernetsov)):
