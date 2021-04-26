@@ -1,7 +1,7 @@
 from uniparser_erzya import ErzyaAnalyzer
-
-a = ErzyaAnalyzer(mode='nodiacritics')
 import re
+import os
+import json
 from orph_corrector import init_function
 
 # text = "puŋktəl, kon-kwaluw āɣmxarəŋ akwtoriɣ, a? d? aa? d? dddd fff, aa, āŋkwal. akwmatnakt, аlśəŋ, wārijaɣum, wojən konal' "
@@ -16,12 +16,12 @@ from orph_corrector import init_function
 # text = "wōwin'tālwēsət sussəltawēsət wōwin'tāluŋkwe"
 # text = "kon=ke=mini kon=kwāləs supiɣ=kwāləs. wārnūwēmēn=ke joxti, am wārilum ēləpal ēləpalt konipal"
 
-text = init_function()
-#text = "joxti akwtoriɣ kwāləs. totwesum aaas"
+#text = init_function("40_2.txt", "chern")
+# text = "joxti akwtoriɣ kwāləs. totwesum aaas"
 # text = "kosja sunt erɣ otər. kosja sunt otər oli. pakw posi wojkan otər akw tujɣ ekwate san wars. ekwate san wars, loŋxa worati. ekwate lawi tur tep, its tep ponne san ojkate at taŋxi. ojkatan san almajawes, puliɣ ratwes. am taj tur tep astep jorəl at janɣ masum. wor sorup n̩owəl tajim, luwum janɣmas n̩owəlum janɣmas. ojkate laws. kitit tujaɣ jemtəs. ekwate xotal̩ olne san, xansaŋ san akwaɣ ta wari. ojkate nupəl lawi: - naŋen tur tep asten pinuŋkwe, manər jomas sankwe. ojkaten almajawe, os puliɣ ratwes. ojkate laws - am tur tep as tep tajum luwum at janɣmas, n̩owəlum at janə̄ɣmas. uj n̩owəl tajim luwum janɣmas, n̩owəlum janɣmas. xurmit tujɣ ti joxtəs, jaŋk notne poraɣ ti jemtəs os. ekwate xansaŋ san os ta wari. Ja wars os sant. ojkate nupəl lawi naŋəx nake tur tep, as tep pinne manər saŋkwe! ojkate wasɣ nemat xotum wasɣ at suitɣlas. ekwate nupəl lawi naŋ kasən minimen ke minumen, ti astlaxtasit. ajaŋ xum pɣane saran xap waruŋkwe larsane wap warsət. taltxatuŋkwe patsət. taltateɣt, nē paɣ mini. n̩al̩ akw xum xontaste. tamle xum xontxatas samaɣe nit at laplɣ ta xurip xum aman etpos, aman xotal! tan ojkate apsite. tan ekwa oŋɣa nupəl lawi: - ta xapet ojkan xottal p.p.w.o xottal̩ minne man totilen. minne mān ojkan ke alawe, wasɣ ti man at sunsiln. an̩ ta minasət. ete xotal etəl ta mineɣt. ɕaraɕ kotli akw mat mina xosa minasit man wat̩a minasit ekwate ojkate nupəl lawi: xuwer (xujew) xujunkwe patsit, ojkate lawi, na maxmane nupəl lawi: nan xujen, am urejum. ekwate lawi: naŋ xujen, naŋ ropitase ə n; waɣtal patsen, am nas unlasum! ojkate lawi: - naŋ erəŋ jola ojilmatawen erəŋ xonten joxtawew. ekwate lawi: - naŋ xujen, xontmake jiŋkwe patawe nox sajkatijanum. xujuŋkwe patsət, ojkate ker supe xot ekwate lawi: ker supe xot aŋx w eln, ete-xotal ker ulaman jomas oɕsann, an̩ aŋxweln! ojkate ker ulamane aŋɣsane, ta xujas. tan xujasət, maxmane tan xujnel sis ekwaten ker kus sunte lap ta juntuws nox  ul wos masxati. Jowte kasajil supɣ. ɕorxəltawes, nox xartuŋkwe jowt nirasanete mus nox-xartnete mus sopəŋ wos tolmati. maxmane xujnanel sis ekwa ruɕ oter. usen ta minas. ruɕ oter us lunnuw ols. Juw joxtas ro usen, lawi - man joxtesuw, jajen xontɣ! takwi maxmane palt sarten minas. tan juji palet. ro xont xap juw. tan maxmane palt joxtəs maxmane xujeɣt. ro. xap tan paltlaneln jis paɣ-poxats. ekwate ojkate nupəl lawi noŋx kwalen, xontn joxtuwesuw ti alawew. ojkate nox kwalapas, roxtəp  taxtas. nox-kwalapas, ker kuse nox kos masapite, tuw at lapi, kente ekwaten lap juntime. xot ta liste. Jowte almajaste, xassumtaste. xassumtame mus, ɕorxəltim matenəl ta supəŋ ta tolmats. Jowte sakwalas, tuwl r otern pusen ta alwest. ekwa tup xul̩tas os apat xujne pəriɕ xultəs. ekwate r.o. nupəl lawi - pəriɕ os oleln, janɣmi, tan aɕe l̩oŋx jujil kinsite. ro lawi tau man̩, aɕe l̩oŋx at kínsīte, aɕe on̩ɕes man ati at waɣte. ta minasit. ppwo puŋk sowl r.otern xot nujwes, naŋk ta l̩axna ta nox- taɣatawes. Jajt ta ta l̩axəl jalum ppwo puŋ sawe naŋk tal̩axət wot untawe sira sowe wos wotawe, aŋxa sowe wos wotawe! ne ro palt olmɣtas. xumɣ ta wariste. an̩ ta oleɣ. pɣriɕ xoɕa man wat̩i ols janɣmas. ro pɣetəl, n̩awrametəl joŋxeɣt. tau katl jor, laɣəle jor, ro pɣət lawi wat waɣtaləɕ mini, tau lɣ itəŋəɕ mini. r.o. n̩awramət pəriɕ nupəl laweɣt - naŋ jor laɣələn ti āɕmen, jor kat t̩i aɕmen, aɕen puŋk sowe as kotle tumpet naŋk tal̩axt manrɣ xoni? jor ti olmen. ɕane palt joxtəs ɕane nupəl lawi: - toxa ti laweɣt - Jor ti osen, os aɕen olim porat joren xotal̩ totiɣlasen? Ꞩane lawi: - aɕen ti, r.o. ta nomsi aɕe sol̩ ti mot xotal jemti akw ti piɕ, tan jor. Joŋxuŋkwe pateɣt tau lɣ, itəŋəɕ mini, motant lɣt waɣtalaɕ mini. ro n̩awramət laweɣt. - aɕen olim porat jor ti olmən, joren xotal̩ totiɣlasen! Ꞩane palt os ti minas. Ꞩane palt joxtəs lawi - Jor ti olmen, aɕen olim porat joren xotal̩ totiɣlasen? Ꞩane lawi aɕen ti. xurmit peraman̩ ti jemtəs. ta jonɣeɣt. tau lɣaəŋəɕ mini motantlɣt, waɣtaləɕ mini. n̩awramət lawɣt- naŋ jor ti olmen, aɕen olim porat, joren xotal̩ ti totiɣlaslən? us joli palt ekwaɣ-ojkaɣ oleɣ. pəriɕ nomsi ekwaɣ ojkaɣ palt tuw jalejum. nawramət laweɣt, ertum aɕ oɕsum - aɕum alime, ɕanum lawi: aɕum oli!. p. ekwaɣ ojkaɣ kitɣlaŋkwe minas. e.o palt joxtəs kitɣli: sol̩ aman aɕ oɕsum? e.-o. laweɣ, - sol̩ aɕ oɕsən. aɕen ti r.oterna olwes. p. ten nupəlen lawi - anumen xap majeln, am juwle mineɣum, aman rot oɕsum, man ati, am at waɣlum. e.-o. laweɣ rotan jun oleɣt. man̩ nupəl majwes, ta minas. minimete elal̩ sunsi, tajtnəl tajt xosit xap juw. xap l̩apan joxtuŋkwe pats, paɣ poxtas, worn tujtxatas. xap tau torɣəl joxtəs, akw xum suiti: - paɣ poxtew, tit elmxolas paɣ miname naŋki. kinsi luw. tan poɣ-poxtasət. ta kinsuŋkwe patsanel. kissanel, xontsanel. ppwo. ta apɕite. jaɣpɣe kinsiŋkwe ti joxtəs p. jaɣpɣen, kitɣlawe: - aɕen xotal̩ totwes? p. lawi: - aɕum ruɕ oterna olime. ta ro usen minasit. ro usen joxtesət. paɣ poxtasit paɣ minuŋkwe patsət p.p.w.o.u., jowt n̩al̩ wəŋkwe kuɕi. mire nupəl lawi - maj manər mirəl warew, ti kem use, amkem paɣ  mineɣum. am jowtəl n̩oləl manər wareɣum, ti kem us. n̩an̩ tup unten mant sup waɣlum, (n̩an̩ untne mant sup) tup wiste, paɣ-ta minas paɣ minas, us akw pale tupəl witen ta rautaste (mant supetəl) uset olne mir ɕar pusen olaste witen naluw rautasaste. r.o. (mant tupəl supetəl) jūnətaste, samaɣe noren xanujasɣ, akw tox sunseɣ. ta xum-akw kot pale, akw laɣəl pale tarwitəŋ. ekwaɣ-ojkaɣ, ten tuwpoxtamɣ - mena men ul aleln! tau lawi: - am nenan at alijaɣum. Juwle minuŋkwe ti patsət. on̩ɣa liliŋ taɣəl xapen totaste. xapen totaste, liliŋ taɣəl kataɣe xap pattan ker sol̩il jol ratsaɣe. laɣəlaɣe xap pattan ker sol̩il as jol ratsaɣe. ta minmɣtasət. ta minmɣtasit ekwa xap pattat ta xuji. ta pukite xosit ta jomeɣt Jomimenəl sorumen ta patwes. tuwl witen ta lisanel. tan olne māneln ta jóxtāsət. an̩ ta oleɣt"
 
 # надо точки срезать, если они появляются
-print("text ", text, " finish")
+# print("text ", text, " finish")
 last_array = []
 # надо добавить аквтопы, а также разобраться с элементами агглютинации в мансийском
 # супыг также имеет значение "осётр"
@@ -40,13 +40,22 @@ assertive = ["at", "ul", "wos", "woss", "ta", "ti", "xun'", "kos", "ke"]
 ass_transl = ["NEG", "COND", "PROH", "OPT", "OPT", "PTCL", "PTCL2", "PTCL2", "разве", "CONC"]
 
 sentence_array = [[], []]
+def createParser(mode):
+    a = ErzyaAnalyzer(mode=mode)
+    return a
 
-def start_analyze_2(word):
-    print("предложение", word)
+def call_adapter(filename, mode):
+    a = createParser(mode)
+    text = init_function(filename, "chern")
+    response = text_splitter(text, a)
+    print_file(response)
+
+def start_analyze_2(word, a):
+    # print("предложение", word)
     analyses = a.analyze_words(word)
-    return analyze(analyses)
+    return analyze(analyses, a)
 
-def analyze(analyses):
+def analyze(analyses, a):
     morphs_array = []
     glosses_array = []
 
@@ -56,7 +65,7 @@ def analyze(analyses):
         for wordform in ana:
             gloss = wordform.gloss
             if '$' in gloss:
-                print("UAAA", gloss)
+                # print("UAAA", gloss)
                 elem = gloss.strip().split('$')
                 result = elem[0]+"["+elem[1]+"]"
                 if elem[2]:
@@ -67,13 +76,17 @@ def analyze(analyses):
                 gloss = result
             if '%' in wordform.lemma:
                 redo = list(wordform.lemma.strip().split('%'))
-                print("redo ", redo)
+                # print("redo ", redo)
                 redo.remove(redo[0])
-                second_analysis = start_analyze_2(redo)
-                print("SECOND: ", second_analysis)
-                glosses_array.append(second_analysis[1])
-                morphs_array.append(second_analysis[0])
-                print("wordform IF: ", wordform)
+                second_analysis = start_analyze_2(redo, a)
+                # print("SECOND: ", second_analysis)
+                # print("BEFORE: ", morphs_array)
+                for elem in second_analysis[0]:
+                    glosses_array.append(elem)
+                for elem in second_analysis[1]:
+                    morphs_array.append(elem)
+                # print("AFTER: ", morphs_array)
+                # print("wordform IF: ", wordform)
             else:
                 if "STEM" in gloss and wordform.wfGlossed:
                     gloss_stem = gloss.replace("STEM", wordform.otherData[0][1])
@@ -81,14 +94,14 @@ def analyze(analyses):
                     prepared_glosses.append(gloss_stem)
                     prepared_morphs.append(wordform.wfGlossed)
                 if wordform.wfGlossed == '':
-                    morphs_array.append(wordform.wf)
-                    glosses_array.append(wordform.wf + "(??)")
+                    morphs_array.append([wordform.wf])
+                    glosses_array.append([wordform.wf + "(??)"])
 
         if len(prepared_glosses) != 0:
             morphs_array.append(prepared_morphs)
             glosses_array.append(prepared_glosses)
         # здесь надо формировать строки с омонимией
-    print("RETURN: ", morphs_array, glosses_array)
+    # print("RETURN: ", morphs_array, glosses_array)
     return [morphs_array, glosses_array]
 
 
@@ -199,7 +212,7 @@ def check_spaces(conc_string):
         else:
             new_string.append(conc_string[i])
     sentence_to_print = "".join(new_string)
-    print("end: ", sentence_to_print)
+    # print("end: ", sentence_to_print)
     return sentence_to_print
 
 # def catch_much_stems(word):
@@ -242,7 +255,7 @@ def catch_preverbs(sentence):
     for word in splitted:
         new_word = []
         replaced = ""
-        print("word", word)
+        # print("word", word)
         for i in range(len(word)):
             if word[i] == "=":
                 new_sentence.append(" ")
@@ -250,7 +263,7 @@ def catch_preverbs(sentence):
                 new_sentence.append(word[i])
         new_sentence.append(" ")
     sentence_to_print = "".join(new_sentence)
-    print("sentence: ", sentence_to_print)
+    # print("sentence: ", sentence_to_print)
     #     for i in range(len(preverbs)):
     #         if preverbs[i]+"-" in word:
     #             word = word.replace(preverbs[i]+"-", preverbs[i]+" ")
@@ -268,28 +281,81 @@ def catch_preverbs(sentence):
     #     if replaced == "":
     #         new_sentence.append(word)
     # sentence_to_print = " ".join(new_sentence)
-    #print("finish", sentence_to_print)
+    # print("finish", sentence_to_print)
     return sentence_to_print
 
 
-def print_dict(array):
+def print_file(array):
     print(array)
-    filename_out = "glosses.csv"
-    with open(filename_out, 'w', encoding='utf-16', newline='') as fout:
-        fout.write('morphemes\tglosses\r\n')
-        for elem in range(len(array)):
-            fout.write(array[elem][0][0] + '\t' + array[elem][1][0] + '\r\n')
+    dict2 = {combination: [{"gramm":
+                                [{"compound"+str(compound):
+                                      [{"omonym"+str(omonym):
+                                            array[combination][0][compound][omonym]
+                                        } for omonym in range(len(array[combination][0][compound]))]
+                                  } for compound in range(len(array[combination][0]))],
+                            "trans":
+                                [{"compound" + str(compound):
+                                      [{"omonym" + str(omonym):
+                                            array[combination][1][compound][omonym]
+                                        } for omonym in range(len(array[combination][1][compound]))]
+                                  } for compound in range(len(array[combination][1]))],
+                            }]
+             for combination in range(len(array))}
+    os.chdir("../../")
+    with open("data_file.json", "w") as write_file:
+        json.dump(dict2, write_file)
+    # to_json = {}
+    # for i in range(len(array)):
+    #     to_json = dict.fromkeys(range(len(array)))
+    #     print(to_json)
+    #     #json.dump("{", write_file)
+    #     print("sentence: ", array[i][0])
+    #     for word in array[i][0]:
+    #         elem = []
+    #         if isinstance(word, list):
+    #             for combination in word:
+    #                 if isinstance(combination, list):
+    #                     comb = {}
+    #                     print("combination: ", combination)
+    #                     for omonym in combination:
+    #                         print("omonym: ", omonym)
+    #                 else:
+    #                     elem.append(combination)
+    #                     print("word: ", combination)
+    #         else:
+    #             elem.append(word)
+    #             to_json = dict.fromkeys(range(len(array)), elem)
+    #             print("word: ", word)
+
+        # if array[i][0]:
+        #     print(array[i][0])
+        # if isinstance(word, list):
+        #     for omonym in word:
+        #         print(omonym)
+        #         to_json.fromkeys(omonym)
+        #     continue
+        # else:
+        #     to_json.fromkeys(word)
+        #     continue
+                 # with open("data_file.json", "w") as write_file:
+                 # json.dump(word, write_file)
+
+    # filename_out = "glosses.csv"
+    # with open(filename_out, 'w', encoding='utf-16', newline='') as fout:
+    #     fout.write('morphemes\tglosses\r\n')
+    #     for elem in range(len(array)):
+    #         fout.write(array[elem][0][0] + '\t' + array[elem][1][0] + '\r\n')
 
 
-def split_sentence(sentence_array):
-    print("String to split: ", sentence_array)
+def split_sentence(sentence_array, a):
+    # print("String to split: ", sentence_array)
     for elem in sentence_array:
         # Emphasize string
-        print("This string: ", elem)
+        # print("This string: ", elem)
         new_sentence_array = catch_preverbs(elem)
         splitted = list(new_sentence_array.strip().split(' '))
         new_string = []
-        print(splitted)
+        # print(splitted)
         for i in range(len(splitted)):
             if "-" in splitted[i]:
                 splitted[i] = splitted[i].strip().split('-')
@@ -297,15 +363,14 @@ def split_sentence(sentence_array):
                     new_string.append(j)
             else:
                 new_string.append(splitted[i])
-        print("Splitted string: ", new_string)
-        array = start_analyze_2(new_string)
+        # print("Splitted string: ", new_string)
+        array = start_analyze_2(new_string, a)
         last_array.append(array)
-    print_dict(last_array)
+    return last_array
 
 
-def text_splitter(text):
+def text_splitter(text, a):
     splitted = list(text.strip().split('.'))
-    split_sentence(splitted)
+    return split_sentence(splitted, a)
 
-
-text_splitter(text)
+call_adapter("W:\domains\Parser/texts/40/40_1.txt", "nodiacritics")
