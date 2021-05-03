@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link href="{{ url_for('static', filename= 'style.css') }}" rel="stylesheet" type="text/css">
+    <title>Parser results handler</title>
+  </head>
+  <body>
+    <form id = "parse_file">
+      <input type="file" id="filename"/>
+
+      <label>
+        Режим парсинга
+        <select id="mode" name="mode">
+          <option value = "strict">C диакритиками (Луима)</option>
+          <option value = "nodiacritics">Без диакритиков (Чернецов)</option>
+        </select>
+      </label>
+      <input type="submit" value="Парсить" name="file">
+    </form>
+      <button id = "save">Сохранить как csv...</button>
+    <main>
+      <table>
+        <tbody id = "tbody">
+        </tbody>
+      </table>
+      <div id = "gramms"></div>
+      <div id = "glosses"></div>
+    </main>
+    <script src="{{ url_for('static', filename= 'jquery-3.4.1.min.js') }}"></script>
+  	<script src = "{{ url_for('static', filename= 'data_parser.js') }}"></script>
+
+  </body>
+</html>
