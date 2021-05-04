@@ -23,7 +23,16 @@ def parse():
 def sentence():
     # { 0: [ "word" : "ma" ], 1: [ "word" : "pu"] }
     word = request.get_json("word")
-    parsed = sentence_adapter(word)
+    words_to_parse = []
+    print(type(word))
+    print(word)
+    print(range(len(word)))
+    for i in range(len(word)):
+        print(word[str(i)])
+        words_to_parse.append(word[str(i)])
+    print("qq", words_to_parse)
+    string_to_parse = " ".join(words_to_parse)
+    parsed = sentence_adapter(string_to_parse)
     resp = make_response(parsed)
     resp.headers['Content-Type'] = "application/json"
     return resp

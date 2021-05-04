@@ -1,3 +1,29 @@
-1. Закомментить /parse и вызов адаптера
-2. открыть от имени администратора, перейти в папку, включить env, вернуться и ввести python -m main
-3. Раскомментить
+файлы с лексемами и парадигмами лежат в папке:
+flask_app\env\Lib\site-packages\uniparser_erzya
+
+let inputData = function (data, num){
+	let row = document.getElementById(num).childNodes
+	console.log(data)
+	$.each(data, function (key, val){
+		$.each(val[0], function (key1, val1){
+		console.log('val1, ', val1)
+		})
+	})
+	for (let node of row){
+		//console.log("for", node)
+		if (node.id === num+'_gramm') {
+			let sentence = node.childNodes
+			for (let i = 0; i<indexes.length; i++){
+
+				sentence[indexes[i]].innerHTML = "lul"
+				console.log("if1", sentence[indexes[i]])
+			}
+
+		}
+		if (node.id === num+'_trans') {
+			let word = node.childNodes
+			//console.log("if2", word)
+		}
+	}
+
+}

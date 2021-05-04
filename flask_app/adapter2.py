@@ -5,6 +5,7 @@ import json
 from orph_corrector import init_function
 
 last_array = []
+mode = []
 
 # wordform.gloss = STEM+MORPH+MORPH...
 
@@ -21,6 +22,7 @@ def createParser(parse_mode):
 
 def call_adapter(filename, parse_mode):
     last_array.clear()
+    mode.append(parse_mode)
     print("CALLED: \n\n", filename, " ", parse_mode)
     a = createParser(parse_mode)
     text = init_function(filename, "chern")
@@ -31,7 +33,7 @@ def call_adapter(filename, parse_mode):
     return finish
 
 def start_analyze_2(word, a):
-    # print("предложение", word)
+    print("предложение", word)
     analyses = a.analyze_words(word)
     return analyze(analyses, a)
 
@@ -152,6 +154,7 @@ def split_sentence(sentence_array, a):
             else:
                 new_string.append(splitted[i])
         # print("Splitted string: ", new_string)
+        print(new_string)
         array = start_analyze_2(new_string, a)
         last_array.append(array)
     return last_array
@@ -162,5 +165,11 @@ def text_splitter(text, a):
     return split_sentence(splitted, a)
 
 def sentence_adapter(word):
-    response = text_splitter(word, a)
-    return response
+    parse_mode = mode[0]
+    last_array.clear()
+    a = createParser(parse_mode)
+    print("word ", word)
+    response = split_sentence([word], a)
+    finish = print_file(response)
+    print("response ", response)
+    return finish

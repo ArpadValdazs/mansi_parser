@@ -1,4 +1,5 @@
 let initialValues = []
+let indexes = []
 
 parser = function(fetchedData){
 	let items = []
@@ -19,7 +20,7 @@ parser = function(fetchedData){
 								if(val5.indexOf("(??)")+1){
 									$("#"+key+"_"+key1).append("<input value="+val5+" >")
 								} else {
-									$("#"+key+"_"+key1).append('<div class = "text_block" id = "text_block" contenteditable="true">'+val5+' '+'</div>')
+									$("#"+key+"_"+key1).append('<div class = "text_block" id = "text_block" contenteditable="true">'+val5+'</div>')
 								}
 
 							})
@@ -41,11 +42,17 @@ parser = function(fetchedData){
 	// только те значения, которые необходимы, и затем встраивать их обратно
 	let data = gatherData()
 	initialValues.push(data)
-	console.log(initialValues)
 }
 $("#save").click(function(){
 	let data = gatherData()
-	console.log(data)
+})
+
+// чтобы не вставлял разрыв по своему почину
+$('div[contenteditable]').keydown(function (e){
+	if(e.keyCode === 13){
+		document.execCommand('insertHTML', false, '<br>')
+		return false;
+	}
 })
 
 // Собирает информацию со всей таблицы
@@ -66,6 +73,7 @@ let collectRow = function(num){
 	let transArray = []
 	let grammtable = document.getElementById(grammString).childNodes
 	let transtable = document.getElementById(transString).childNodes
+	//console.log('grammtable: ', grammtable)
 	for (let node of grammtable){
 		if (node.nodeName === 'DIV') {
 			grammArray.push(node.innerHTML)
@@ -91,32 +99,104 @@ let collectRow = function(num){
 $("body").on('click', '#reparse', function(event){
 	let num = this.parentElement.id[0]
 	let arrayToSend = collectRow(num)
-	console.log("ARRAY", arrayToSend)
+	//console.log("ARRAY", arrayToSend)
+	reparse(arrayToSend, num)
 	//дальше надо через async await зафигарить отправку
 })
 
-let fetchData = function (url, data){
-	fetch(url, {
+let reparse = async function(arrayToSend, num){
+	let obj = {}
+	let j = 0
+	arrayToSend[0]
+	for (let i = 0; i<initialValues[0][num][0].length; i++){
+		if (initialValues[0][num][0][i] !== arrayToSend[0][i]){
+			indexes.push(i)
+			obj[j]=arrayToSend[0][i].replace(/<[^>]+>/g, '').trim()
+			j = j + 1
+		}
+	}
+	//console.log(obj)
+
+	let sendo = JSON.stringify(obj)
+	let response = await fetch('http://127.0.0.1:5000/sentence', {
 		method: 'POST',
 		mode: 'no-cors',
 		headers: {
 			'Access-Control-Allow-Origin':'*',
 			'Content-Type': 'json'
 		},
-		body: data
+		body: sendo
 	}).then(response => {
 		response.json().then((data) => {
-			console.log(data)
-			parser(data)
+			inputData(data, num)
 		});
 	})
-	return "success"
+
 }
+
+let inputData = function (data, num){
+	let row = document.getElementById(num).childNodes
+	let gramm = []
+	$.each(data, function (key, val){
+		$.each(val[0], function (key1, val1){
+			if (key1 === "gramm"){
+				for (let i = 0; i<val1.length; i++){
+					$.each(val1[i], function (key2, val2){
+						if (val2.length===1){
+							$.each(val2, function (key3, val3){
+								$.each(val3, function (key4, val4){
+									gramm.push([val4])
+								})
+							})
+						} else {
+							let omonyms = []
+							$.each(val2, function (key3, val3){
+								$.each(val3, function (key4, val4){
+									omonyms.push(val4)
+								})
+							})
+							gramm.push(omonyms)
+						}
+					})
+				}
+			}
+		})
+	})
+	for (let node of row){
+		//console.log("for", node)
+		if (node.id === num+'_gramm') {
+			let sentence = node.childNodes
+			for (let i = 0; i<indexes.length; i++){
+				if(gramm[i].length===1){
+					sentence[indexes[i]].innerHTML = gramm[i][0]
+				} else {
+					const newSelector = document.createElement("select")
+					newSelector.setAttribute("id", num+"_gramm_compound"+indexes[i])
+					sentence[indexes[i]].replaceWith(newSelector)
+					let selector = document.getElementById(num+"_gramm_compound"+indexes[i])
+					for (let j = 0; j < gramm[i].length; j++){
+						selector.insertAdjacentHTML("beforeend", "<option>"+gramm[i][j]+"</option>")
+					}
+				}
+			}
+		}
+		if (node.id === num+'_trans') {
+			let word = node.childNodes
+			//console.log("if2", word)
+		}
+	}
+	let new_data = gatherData()
+	initialValues=[]
+	indexes = []
+	initialValues.push(new_data)
+	gramm =[]
+}
+
 
 let formRequest = async function(){
 	let mode = $("#mode").val()
 	let text = $("#filename").val()
-	console.log(text)
+	//console.log(text)
 	if (text==="") {
 		alert("Ты не ввёл имя файла!")
 		return;
@@ -126,12 +206,28 @@ let formRequest = async function(){
 		"parse_mode": mode,
 		"text": elem[2]
 	})
-	console.log("lul ", sendo)
-	let response = await fetchData('http://127.0.0.1:5000/parse', sendo)
+	//console.log("INFO ", sendo)
+	let response = await fetch('http://127.0.0.1:5000/parse', {
+		method: 'POST',
+		mode: 'no-cors',
+		headers: {
+			'Access-Control-Allow-Origin':'*',
+			'Content-Type': 'json'
+		},
+		body: sendo
+	}).then(response => {
+		response.json().then((data) => {
+			//console.log(data)
+			parser(data)
+		});
+	})
+
 }
+
+
 // отправка данных парсеру
 $("#parse_file").submit(function(event){
-	console.log(initialValues)
+	//console.log(initialValues)
 	if (initialValues.length === 0) {
 		event.preventDefault()
 		formRequest()
