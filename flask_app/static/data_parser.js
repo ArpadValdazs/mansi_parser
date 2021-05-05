@@ -18,7 +18,9 @@ parser = function(fetchedData){
 						$.each(val3, function (key4, val4) {
 							$.each(val4, function (key5, val5) {
 								if(val5.indexOf("(??)")+1){
-									$("#"+key+"_"+key1).append("<input value="+val5+" >")
+									val5 = val5.substr(0, val5.length-4)
+									$("#"+key+"_"+key1).append('<div class = "text_block" id = "text_block" contenteditable="true"><span class = "notfound">'+val5+'</span></div>')
+
 								} else {
 									$("#"+key+"_"+key1).append('<div class = "text_block" id = "text_block" contenteditable="true">'+val5+'</div>')
 								}
@@ -45,14 +47,6 @@ parser = function(fetchedData){
 }
 $("#save").click(function(){
 	let data = gatherData()
-})
-
-// чтобы не вставлял разрыв по своему почину
-$('div[contenteditable]').keydown(function (e){
-	if(e.keyCode === 13){
-		document.execCommand('insertHTML', false, '<br>')
-		return false;
-	}
 })
 
 // Собирает информацию со всей таблицы
@@ -137,6 +131,7 @@ let reparse = async function(arrayToSend, num){
 let inputData = function (data, num){
 	let row = document.getElementById(num).childNodes
 	let gramm = []
+	let trans = []
 	$.each(data, function (key, val){
 		$.each(val[0], function (key1, val1){
 			if (key1 === "gramm"){
@@ -156,6 +151,26 @@ let inputData = function (data, num){
 								})
 							})
 							gramm.push(omonyms)
+						}
+					})
+				}
+			} if (key1 === "trans"){
+				for (let i = 0; i<val1.length; i++){
+					$.each(val1[i], function (key2, val2){
+						if (val2.length===1){
+							$.each(val2, function (key3, val3){
+								$.each(val3, function (key4, val4){
+									trans.push([val4])
+								})
+							})
+						} else {
+							let omonyms = []
+							$.each(val2, function (key3, val3){
+								$.each(val3, function (key4, val4){
+									omonyms.push(val4)
+								})
+							})
+							trans.push(omonyms)
 						}
 					})
 				}
@@ -179,18 +194,41 @@ let inputData = function (data, num){
 					}
 				}
 			}
-		}
+		} if(node.id === num+'_trans') {
+			let sentence = node.childNodes
+			for (let i = 0; i<indexes.length; i++){
+				console.log(sentence[indexes[i]])
+				if(trans[i].length===1){
+					if(trans[i][0].indexOf("(??)")+1){
+						let string = trans[i][0].substr(0, trans[i][0].length-4)
+						sentence[indexes[i]].innerHTML = '<span class="notfound">'+string+'</span>'
+					} else {
+						sentence[indexes[i]].innerHTML = trans[i][0]
+					}
+
+				} else {
+					const newSelector = document.createElement("select")
+					newSelector.setAttribute("id", num+"_trans_compound"+indexes[i])
+					sentence[indexes[i]].replaceWith(newSelector)
+					let selector = document.getElementById(num+"_trans_compound"+indexes[i])
+					for (let j = 0; j < trans[i].length; j++){
+						selector.insertAdjacentHTML("beforeend", "<option>"+trans[i][j]+"</option>")
+					}
+				}}
+			}
 		if (node.id === num+'_trans') {
 			let word = node.childNodes
 			//console.log("if2", word)
 		}
-	}
+		}
 	let new_data = gatherData()
 	initialValues=[]
 	indexes = []
 	initialValues.push(new_data)
-	gramm =[]
+	gramm = []
+	trans = []
 }
+
 
 
 let formRequest = async function(){
