@@ -1,4 +1,5 @@
 let initialValues = []
+let startValues = []
 let indexes = []
 
 parser = function(fetchedData){
@@ -44,9 +45,25 @@ parser = function(fetchedData){
 	// только те значения, которые необходимы, и затем встраивать их обратно
 	let data = gatherData()
 	initialValues.push(data)
+	startValues.push(data)
 }
+
 $("#save").click(function(){
+	let filename = document.getElementById("exportName").value
+	console.log(filename)
 	let data = gatherData()
+	let obj = {}
+	for (let row = 0; row < data.length; row++){
+		console.log(row)
+		let elem = []
+		elem.push([data[row][0].join(' ')])
+		elem.push([data[row][1].join(' ')])
+		console.log(elem);
+		obj[row] = elem
+	}
+	obj["filename"] = filename
+	let json = JSON.stringify(obj)
+	saver(json)
 })
 
 // Собирает информацию со всей таблицы
@@ -70,7 +87,7 @@ let collectRow = function(num){
 	//console.log('grammtable: ', grammtable)
 	for (let node of grammtable){
 		if (node.nodeName === 'DIV') {
-			grammArray.push(node.innerHTML)
+			grammArray.push(node.innerText)
 		}
 		if (node.nodeName === 'SELECT') {
 			grammArray.push(node.value)
@@ -78,7 +95,7 @@ let collectRow = function(num){
 	}
 	for (let node of transtable){
 		if (node.nodeName === 'DIV') {
-			transArray.push(node.innerHTML)
+			transArray.push(node.innerText)
 		}
 		if (node.nodeName === 'SELECT') {
 			transArray.push(node.value)
@@ -97,6 +114,23 @@ $("body").on('click', '#reparse', function(event){
 	reparse(arrayToSend, num)
 	//дальше надо через async await зафигарить отправку
 })
+
+let saver = async function(jsonToSend){
+	let response = await fetch('http://127.0.0.1:5000/saver', {
+		method: 'POST',
+		mode: 'no-cors',
+		headers: {
+			'Access-Control-Allow-Origin':'*',
+			'Content-Type': 'json'
+		},
+		body: jsonToSend
+	}).then(response => {
+		console.log(response)
+		response.json().then((data) => {
+			console.log("ЁВТАТАНО ПОЗДОРОВТ!")
+		});
+	})
+}
 
 let reparse = async function(arrayToSend, num){
 	let obj = {}
@@ -276,6 +310,7 @@ $("#parse_file").submit(function(event){
 			$('table').append('<tbody id="tbody"></tbody>')
 			formRequest()
 		} else {
+			event.preventDefault()
 		}
 	}
 })

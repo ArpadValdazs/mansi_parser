@@ -173,3 +173,23 @@ def sentence_adapter(word):
     finish = print_file(response)
     print("response ", response)
     return finish
+
+def saveFile(data):
+    filename = data["filename"]
+    print(os.getcwd())
+    os.chdir('MorphParser/flask_app')
+    with open(filename+".csv", "w", encoding="utf-8") as fout:
+        fout.write('№\tgramm\tgloss\r\n')
+        for i in range(len(data)-1):
+            print(i)
+            fout.write(str(i)+'\t')
+            for row in data[str(i)]:
+                if "," in row[0]:
+                    elem = row[0].replace(",", "")
+                    print(elem)
+                    fout.write(elem+'\t')
+                else:
+                    fout.write(row[0] + '\t')
+            i += 1
+            fout.write('\n')
+    os.chdir('../../')

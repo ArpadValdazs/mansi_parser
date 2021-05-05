@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response, render_template
-from adapter2 import call_adapter, sentence_adapter
+from adapter2 import call_adapter, sentence_adapter, saveFile
 
 app = Flask(__name__)
 
@@ -34,6 +34,16 @@ def sentence():
     string_to_parse = " ".join(words_to_parse)
     parsed = sentence_adapter(string_to_parse)
     resp = make_response(parsed)
+    resp.headers['Content-Type'] = "application/json"
+    return resp
+
+@app.route('/saver', methods = ['GET', 'POST'])
+def saver():
+    # { 0: [ "word" : "ma" ], 1: [ "word" : "pu"] }
+    file = request.get_json("word")
+    saveFile(file)
+    #parsed = sentence_adapter(string_to_parse)
+    resp = make_response({"lol": "kk"})
     resp.headers['Content-Type'] = "application/json"
     return resp
 
