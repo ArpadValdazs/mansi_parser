@@ -5,13 +5,16 @@ let indexes = []
 parser = function(fetchedData){
 	let items = []
 	$.each(fetchedData, function (key, val){
+	    console.log(val)
 		//key - number of sentence
 		$("#tbody").append("<tr id="+key+"></tr>")
 		$("#"+key).append("<td id="+key+'td'+">"+key+"</td>")
-		$("#"+key).append("<td id="+key+'button'+"><button id=reparse>reparse</button></td>")
+		$("#"+key).append("<td id="+key+"><button id=reparse>reparse</button></td>")
 		$.each(val[0], function (key1, val1){
 			//key1 - displays "gramm" or "trans" strings
+            console.log(key, " ", key1)
 			$("#"+key).append("<td id="+key+'_'+key1+"></td>")
+            console.log($("#"+key+'_'+key1))
 			$.each(val1, function (key2, val2){
 				//key2 - displays all the objects with compounds key2: {compound}
 				$.each(val2, function (key3, val3){
@@ -44,9 +47,14 @@ parser = function(fetchedData){
 	// Вносим данные, чтобы потом при парсинге отдельных строк сравнивать, и отправлять
 	// только те значения, которые необходимы, и затем встраивать их обратно
 	let data = gatherData()
+    console.log(data)
 	initialValues.push(data)
 	startValues.push(data)
 }
+
+document.querySelector("select").addEventListener('change', function (e){
+	console.log(e.target.value)
+})
 
 $("#save").click(function(){
 	let filename = document.getElementById("exportName").value
@@ -71,7 +79,7 @@ let gatherData = function (){
 	let table = $("#tbody").children()
 	let tableData = []
 	for (let row of table){
-		array = collectRow(row.childNodes[0].innerHTML)
+		let array = collectRow(row.childNodes[0].innerHTML)
 		tableData.push(array)
 	}
 	return tableData
@@ -90,7 +98,9 @@ let collectRow = function(num){
 			grammArray.push(node.innerText)
 		}
 		if (node.nodeName === 'SELECT') {
-			grammArray.push(node.value)
+			// if (mode === "createTable"){
+				grammArray.push(node.value)
+			// }
 		}
 	}
 	for (let node of transtable){
@@ -98,20 +108,48 @@ let collectRow = function(num){
 			transArray.push(node.innerText)
 		}
 		if (node.nodeName === 'SELECT') {
-			transArray.push(node.value)
-		}
-		if (node.nodeName === 'INPUT') {
-			transArray.push(node.value)
+			// if (mode === "createTable"){
+				transArray.push(node.value)
+			// }
 		}
 	}
+	//console.log(grammArray, transArray)
 	return [grammArray,transArray]
 }
 
 $("body").on('click', '#reparse', function(event){
-	let num = this.parentElement.id[0]
+	let num = this.parentElement.id
+	console.log("num ", num)
+	console.log("num ", this.parentElement)
 	let arrayToSend = collectRow(num)
-	//console.log("ARRAY", arrayToSend)
+	let newArray = []
+	this.parentElement[num]
+
+	for (let i = 0; i < arrayToSend[0].length; i++){
+		let grammElem = document.getElementById(num+"_gramm").childNodes[i].nodeName
+		console.log(grammElem)
+		if(grammElem === 'SELECT'){
+			arrayToSend[0][i] = initialValues[0][num][0][i]
+		}
+	}
+	console.log(newArray)
 	reparse(arrayToSend, num)
+	//дальше надо через async await зафигарить отправку
+})
+
+$(document).on('click', function(event){
+	if(event.target.tagName === 'SELECT' && event.target.id !== "mode"){
+		event.target.addEventListener("change", function (){
+			for(let i = 0; i < event.target.childNodes.length; i++){
+				event.target.childNodes[i].id = ""
+			}
+			if(event.target.childNodes)
+				event.target.childNodes[event.target.selectedIndex].id = event.target.selectedIndex
+		})
+	}
+
+	// const selector = document.getElementById("select")
+	// selector.setAttribute("id", event.target.selectedIndex)
 	//дальше надо через async await зафигарить отправку
 })
 
@@ -135,7 +173,7 @@ let saver = async function(jsonToSend){
 let reparse = async function(arrayToSend, num){
 	let obj = {}
 	let j = 0
-	arrayToSend[0]
+	console.log(initialValues[0][num][0])
 	for (let i = 0; i<initialValues[0][num][0].length; i++){
 		if (initialValues[0][num][0][i] !== arrayToSend[0][i]){
 			indexes.push(i)
@@ -143,7 +181,8 @@ let reparse = async function(arrayToSend, num){
 			j = j + 1
 		}
 	}
-	//console.log(obj)
+	console.log(arrayToSend)
+	console.log('obj ',obj)
 
 	let sendo = JSON.stringify(obj)
 	let response = await fetch('http://127.0.0.1:5000/sentence', {
@@ -231,7 +270,7 @@ let inputData = function (data, num){
 		} if(node.id === num+'_trans') {
 			let sentence = node.childNodes
 			for (let i = 0; i<indexes.length; i++){
-				console.log(sentence[indexes[i]])
+				//console.log(sentence[indexes[i]])
 				if(trans[i].length===1){
 					if(trans[i][0].indexOf("(??)")+1){
 						let string = trans[i][0].substr(0, trans[i][0].length-4)
@@ -313,4 +352,59 @@ $("#parse_file").submit(function(event){
 			event.preventDefault()
 		}
 	}
+})
+
+$("#save_temp").click(async function (event){
+	let table = document.getElementById('main').innerHTML
+	let fileName = document.getElementById('tempName').value
+	//console.log(table.toString())
+	let sendo = JSON.stringify({"text": table.toString(), "filename": fileName+".html"})
+	let response = await fetch('http://127.0.0.1:5000/create_temp', {
+		method: 'POST',
+		mode: 'no-cors',
+		headers: {
+			'Access-Control-Allow-Origin':'*',
+			'Content-Type': 'json'
+		},
+		body: sendo
+	}).then(response => {
+		response.json().then((data) => {
+			console.log(data)
+		});
+	})
+})
+
+$("#open_temp").click(function (event){
+	event.target.addEventListener("change", async function (){
+		let elem = event.target.value.split("\\")
+		let sendo = JSON.stringify({
+			"filename": elem[2]
+		})
+		//console.log(event.target.value)
+		let response = await fetch('http://127.0.0.1:5000/get_file', {
+			method: 'POST',
+			mode: 'no-cors',
+			headers: {
+				'Access-Control-Allow-Origin':'*',
+				'Content-Type': 'json'
+			},
+			body: sendo
+		}).then(response => {
+			response.text().then((data) => {
+				document.getElementById('main').innerHTML = data
+				let selector = document.getElementsByTagName('select')
+				for (let i = 1; i < selector.length; i++) {
+					for(let j = 0; j < selector[i].length; j++) {
+						if(selector[i].childNodes[j].id !== ""){
+							selector[i].value = selector[i].childNodes[j].innerText
+							selector[i].childNodes[j]
+						}
+					}
+				}
+				let new_data = gatherData()
+				initialValues.push(new_data)
+				//console.log(new_data)
+			});
+		})
+	})
 })

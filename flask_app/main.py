@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response, render_template
-from adapter2 import call_adapter, sentence_adapter, saveFile
+from adapter2 import call_adapter, sentence_adapter, saveFile, find_file, save_temp
 
 app = Flask(__name__)
 
@@ -39,11 +39,27 @@ def sentence():
 
 @app.route('/saver', methods = ['GET', 'POST'])
 def saver():
-    # { 0: [ "word" : "ma" ], 1: [ "word" : "pu"] }
     file = request.get_json("word")
     saveFile(file)
-    #parsed = sentence_adapter(string_to_parse)
-    resp = make_response({"lol": "kk"})
+    resp = make_response({"success": "successed"})
+    resp.headers['Content-Type'] = "application/json"
+    return resp
+
+@app.route('/get_file', methods = ['GET', 'POST'])
+def get_file():
+    file = request.get_json("link")
+    print(file)
+    file = find_file(file)
+    resp = make_response(file)
+    resp.headers['Content-Type'] = "application/html"
+    return resp
+
+@app.route('/create_temp', methods = ['GET', 'POST'])
+def create_temp():
+    file = request.get_json("link")
+    print(file)
+    save_temp(file)
+    resp = make_response({"response": "Файл добавлен!"})
     resp.headers['Content-Type'] = "application/json"
     return resp
 

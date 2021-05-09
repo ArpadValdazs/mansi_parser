@@ -17,6 +17,7 @@ ass_transl = ["NEG", "COND", "PROH", "OPT", "OPT", "PTCL", "PTCL2", "PTCL2", "р
 
 sentence_array = [[], []]
 def createParser(parse_mode):
+    print(parse_mode)
     a = ErzyaAnalyzer(mode=parse_mode)
     return a
 
@@ -35,6 +36,7 @@ def call_adapter(filename, parse_mode):
 def start_analyze_2(word, a):
     print("предложение", word)
     analyses = a.analyze_words(word)
+    print(analyses)
     return analyze(analyses, a)
 
 def analyze(analyses, a):
@@ -177,7 +179,10 @@ def sentence_adapter(word):
 def saveFile(data):
     filename = data["filename"]
     print(os.getcwd())
-    os.chdir('MorphParser/flask_app')
+    if os.getcwd() == "C:\\Users\\Пользователь":
+        os.chdir('MorphParser/flask_app')
+    if os.getcwd() == "C:\\":
+        os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
     with open(filename+".csv", "w", encoding="utf-8") as fout:
         fout.write('№\tgramm\tgloss\r\n')
         for i in range(len(data)-1):
@@ -192,4 +197,27 @@ def saveFile(data):
                     fout.write(row[0] + '\t')
             i += 1
             fout.write('\n')
-    os.chdir('../../')
+    print(os.getcwd())
+    os.chdir("../../")
+    print(os.getcwd())
+
+def find_file(data):
+    if os.getcwd() == "C:\\Users\\Пользователь":
+        os.chdir('MorphParser/flask_app')
+    if os.getcwd() == "C:\\":
+        os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
+    print(os.getcwd())
+    with open(data["filename"], "r", encoding="utf-8") as fout:
+        os.chdir("../../")
+        return fout.read()
+
+def save_temp(data):
+    if os.getcwd() == "C:\\Users\\Пользователь":
+        os.chdir('MorphParser/flask_app')
+    if os.getcwd() == "C:\\":
+        os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
+    print(os.getcwd())
+    with open(data["filename"], "w", encoding="utf-8") as fout:
+        fout.write(data["text"])
+        os.chdir("../../")
+

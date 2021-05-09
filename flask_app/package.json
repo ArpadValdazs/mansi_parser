@@ -1,0 +1,15 @@
+{
+  "name": "flask_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "data_parser.js",
+  "dependencies": {
+    "file-saver": "^2.0.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "arpad",
+  "license": "ISC"
+}

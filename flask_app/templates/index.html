@@ -20,18 +20,25 @@
       </label>
       <input type="submit" value="Парсить" name="file">
     </form>
-      <button id = "save">Сохранить как csv...</button>
-    <label for="exportName">Введите имя файла</label><input id="exportName">
-    <main>
+    <label for="exportName">Введите имя файла</label><br>
+    <input id="exportName" placeholder="имя csv файла"><br>
+    <button id = "save">Сохранить как csv...</button>
+    <br><br>
+    <input id="tempName" placeholder="Имя временного файла"><br>
+    <button id = "save_temp">Сохранить временный файл</button><br><br>
+    <label for="open_temp">Загрузить таблицу...</label><br>
+    <input type="file" id="open_temp">
+    <main id="main">
       <table>
         <tbody id = "tbody">
         </tbody>
       </table>
-      <div id = "gramms"></div>
-      <div id = "glosses"></div>
     </main>
+      <!--<div id = "gramms"></div>
+      <div id = "glosses"></div>-->
+
+    <script src = "{{ url_for('static', filename= 'node_modules/file-saver/src/FileSaver.js') }}"></script>
     <script src="{{ url_for('static', filename= 'jquery-3.4.1.min.js') }}"></script>
   	<script src = "{{ url_for('static', filename= 'data_parser.js') }}"></script>
-
   </body>
 </html>

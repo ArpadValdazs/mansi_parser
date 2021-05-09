@@ -23,6 +23,8 @@ def corrector(text, type):
     text = text.replace("=", " ")
     text = text.replace(" -", "")
     text = text.replace("- ", "")
+    text = text.replace("(", "")
+    text = text.replace(")", "")
     if text[-1] == ".":
         text = text[:-1]
     for i in range(len(text)):
