@@ -157,22 +157,28 @@ $("body").on('click', '#reparse', function(event){
 	reparse(arrayToSend, num)
 	//дальше надо через async await зафигарить отправку
 }).on('click', "#reparseHard", function (event){
-	console.log(event.target.parentElement.parentElement.id)
-	let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id})
-	let response = fetch('http://127.0.0.1:5000/reparse_hard', {
-		method: 'POST',
-		mode: 'no-cors',
-		headers: {
-			'Access-Control-Allow-Origin':'*',
-			'Content-Type': 'json'
-		},
-		body: sendo
-	}).then(response => {
-		response.json().then((data) => {
-			parser(data, event.target.parentElement.parentElement.id)
-			console.log("joo")
-		});
-	})
+	if(confirm('Ты уверен, что хочешь перепарсить строку?')){
+		console.log(event.target.parentElement.parentElement.id)
+		let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id})
+
+		let response = fetch('http://127.0.0.1:5000/reparse_hard', {
+			method: 'POST',
+			mode: 'no-cors',
+			headers: {
+				'Access-Control-Allow-Origin':'*',
+				'Content-Type': 'json'
+			},
+			body: sendo
+		}).then(response => {
+			response.json().then((data) => {
+				parser(data, event.target.parentElement.parentElement.id)
+				console.log("joo")
+			});
+		})
+
+	} else {
+
+	}
 })
 
 $(document).on('click', function(event){
@@ -203,7 +209,7 @@ let saver = async function(jsonToSend){
 	}).then(response => {
 		console.log(response)
 		response.json().then((data) => {
-			console.log("ЁВТАТАНО ПОЗДОРОВТ!")
+			alert("ЁВТАТАНО ПОЗДОРОВТ!")
 		});
 	})
 }
@@ -407,7 +413,7 @@ $("#save_temp").click(async function (event){
 		body: sendo
 	}).then(response => {
 		response.json().then((data) => {
-			console.log(data)
+			alert("ЁВТАТАНО ПОЗДОРОВТ!")
 		});
 	})
 })
