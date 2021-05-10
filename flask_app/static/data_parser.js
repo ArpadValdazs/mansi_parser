@@ -2,14 +2,34 @@ let initialValues = []
 let startValues = []
 let indexes = []
 
-parser = function(fetchedData){
+parser = function(fetchedData, rowKey = null){
 	let items = []
+	if (rowKey !== null){
+		let obj = {}
+		obj[rowKey] = fetchedData[0]
+		// fetchedData.key = rowKey
+		console.log(fetchedData)
+		console.log("rowkey ", obj)
+		console.log("keys ", Object.keys(fetchedData))
+		fetchedData = obj
+		// console.log("value ", Object.value(fetchedData))
+	}
 	$.each(fetchedData, function (key, val){
 	    console.log(val)
+		if (rowKey !== null){
+			let initKey = key
+			// как-то нужно заменить ключ
+			$("#"+key+"_gramm").remove()
+			$("#"+key+"_trans").remove()
+			$("#"+key+"_button").remove()
+			key = initKey
+		} else {
+			$("#tbody").append("<tr id="+key+"></tr>")
+			$("#"+key).append("<td id="+key+'td'+">"+key+"</td>")
+			$("#"+key).append("<td id="+key+"><button id=reparse>reparse</button></td>")
+		}
+		console.log("KEY ", key)
 		//key - number of sentence
-		$("#tbody").append("<tr id="+key+"></tr>")
-		$("#"+key).append("<td id="+key+'td'+">"+key+"</td>")
-		$("#"+key).append("<td id="+key+"><button id=reparse>reparse</button></td>")
 		$.each(val[0], function (key1, val1){
 			//key1 - displays "gramm" or "trans" strings
             console.log(key, " ", key1)
@@ -43,6 +63,7 @@ parser = function(fetchedData){
 				})
 			})
 		})
+		$("#"+key).append("<td id="+key+"_button><button id=reparseHard>reparse hard!</button></td>")
 	})
 	// Вносим данные, чтобы потом при парсинге отдельных строк сравнивать, и отправлять
 	// только те значения, которые необходимы, и затем встраивать их обратно
@@ -135,6 +156,23 @@ $("body").on('click', '#reparse', function(event){
 	console.log(newArray)
 	reparse(arrayToSend, num)
 	//дальше надо через async await зафигарить отправку
+}).on('click', "#reparseHard", function (event){
+	console.log(event.target.parentElement.parentElement.id)
+	let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id})
+	let response = fetch('http://127.0.0.1:5000/reparse_hard', {
+		method: 'POST',
+		mode: 'no-cors',
+		headers: {
+			'Access-Control-Allow-Origin':'*',
+			'Content-Type': 'json'
+		},
+		body: sendo
+	}).then(response => {
+		response.json().then((data) => {
+			parser(data, event.target.parentElement.parentElement.id)
+			console.log("joo")
+		});
+	})
 })
 
 $(document).on('click', function(event){

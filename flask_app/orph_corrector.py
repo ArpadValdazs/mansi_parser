@@ -17,7 +17,6 @@ def corrector(text, type):
     text = text.replace("Ļ", "l'")
     text = text.replace("Ț", "t'")
 
-    text = text.replace("ьɧ", "ɧ")
     text = text.replace("\u030A", "")
     text = text.replace("\u0022", "")
     text = text.replace("=", " ")

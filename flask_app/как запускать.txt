@@ -1,29 +1,13 @@
 файлы с лексемами и парадигмами лежат в папке:
 flask_app\env\Lib\site-packages\uniparser_erzya
 
-let inputData = function (data, num){
-	let row = document.getElementById(num).childNodes
-	console.log(data)
-	$.each(data, function (key, val){
-		$.each(val[0], function (key1, val1){
-		console.log('val1, ', val1)
-		})
-	})
-	for (let node of row){
-		//console.log("for", node)
-		if (node.id === num+'_gramm') {
-			let sentence = node.childNodes
-			for (let i = 0; i<indexes.length; i++){
+Порядок работы:
+1. Просмотреть, если он споткнулся на точках, и исправить в самом исходнике
+2. Просмотреть все красные слова, исправить, и перепарсить всё.
+Если заметил, что что-то забыл, то лучше создать отдельный файл, и потом вручную скомпилировать
+Если в файл лексемы или грамматика всралась ошибка, то надо сделать временный файл, поменять файл лексемы (в любой очерёдности), открыть этот файл снова, и отредактировать.
 
-				sentence[indexes[i]].innerHTML = "lul"
-				console.log("if1", sentence[indexes[i]])
-			}
-
-		}
-		if (node.id === num+'_trans') {
-			let word = node.childNodes
-			//console.log("if2", word)
-		}
-	}
-
-}
+Что мне не нравится:
+1. Если я вношу изменения, но не нажимаю кнопку репарс, то при переходе на другую строку, и затем при нажатии на кнопку репарс ничего не меняется
+2. При изменении нескольких дивов отказывается репарсить вообще всю строку.
+3. Надо добавить функцию жёсткого репарсинга всей строки (чтобы перепарсивал всю строку целиком)

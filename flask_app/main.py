@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response, render_template
-from adapter2 import call_adapter, sentence_adapter, saveFile, find_file, save_temp
+from adapter2 import call_adapter, sentence_adapter, saveFile, find_file, save_temp, hard_adapter
 
 app = Flask(__name__)
 
@@ -16,6 +16,7 @@ def parse():
     # mode = 'nodiacritics'
     parsed = call_adapter(mode["text"], mode["parse_mode"])
     resp = make_response(parsed)
+    print("parsed ", parsed)
     resp.headers['Content-Type'] = "application/json"
     return resp
 
@@ -60,6 +61,16 @@ def create_temp():
     print(file)
     save_temp(file)
     resp = make_response({"response": "Файл добавлен!"})
+    resp.headers['Content-Type'] = "application/json"
+    return resp
+
+@app.route('/reparse_hard', methods = ['GET', 'POST'])
+def reparse_hard():
+    num = request.get_json("link")
+    print(num)
+    response = hard_adapter(num)
+    print(response)
+    resp = make_response(response)
     resp.headers['Content-Type'] = "application/json"
     return resp
 

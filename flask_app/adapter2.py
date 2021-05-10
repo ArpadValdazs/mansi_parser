@@ -6,6 +6,7 @@ from orph_corrector import init_function
 
 last_array = []
 mode = []
+initial_string = []
 
 # wordform.gloss = STEM+MORPH+MORPH...
 
@@ -24,25 +25,24 @@ def createParser(parse_mode):
 def call_adapter(filename, parse_mode):
     last_array.clear()
     mode.append(parse_mode)
-    print("CALLED: \n\n", filename, " ", parse_mode)
+    # print("CALLED: \n\n", filename, " ", parse_mode)
     a = createParser(parse_mode)
     text = init_function(filename, "chern")
-    print("CORR: \n\n", text)
+    # print("CORR: \n\n", text)
     response = text_splitter(text, a)
-    print("GOT: \n\n", response)
+    # print("GOT: \n\n", response)
     finish = print_file(response)
     return finish
 
 def start_analyze_2(word, a):
-    print("предложение", word)
+    # print("предложение", word)
     analyses = a.analyze_words(word)
-    print(analyses)
+    # print(analyses)
     return analyze(analyses, a)
 
 def analyze(analyses, a):
     morphs_array = []
     glosses_array = []
-
     for ana in analyses:
         prepared_glosses = []
         prepared_morphs = []
@@ -164,6 +164,9 @@ def split_sentence(sentence_array, a):
 
 def text_splitter(text, a):
     splitted = list(text.strip().split('.'))
+    print(splitted)
+    for i in splitted:
+        initial_string.append(i)
     return split_sentence(splitted, a)
 
 def sentence_adapter(word):
@@ -183,7 +186,7 @@ def saveFile(data):
         os.chdir('MorphParser/flask_app')
     if os.getcwd() == "C:\\":
         os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
-    with open(filename+".csv", "w", encoding="utf-8") as fout:
+    with open(filename+".xlsx", "w", encoding="utf-8") as fout:
         fout.write('№\tgramm\tgloss\r\n')
         for i in range(len(data)-1):
             print(i)
@@ -220,4 +223,16 @@ def save_temp(data):
     with open(data["filename"], "w", encoding="utf-8") as fout:
         fout.write(data["text"])
         os.chdir("../../")
+
+def hard_adapter(num):
+    # print("init ", initial_string)
+    last_array.clear()
+    print("initthis ", initial_string[int(num["number"])])
+    parse_mode = mode[0]
+    a = createParser(parse_mode)
+    result = split_sentence([initial_string[int(num["number"])]], a)
+    response = print_file(result)
+    print("response", response)
+    return response
+
 
