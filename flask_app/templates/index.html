@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-content="Expires" content="-1">
     <link href="{{ url_for('static', filename= 'style.css') }}" rel="stylesheet" type="text/css">
     <title>Parser results handler</title>
   </head>
@@ -14,18 +16,22 @@
       <label>
         Режим парсинга
         <select id="mode" name="mode">
-          <option value = "strict">C диакритиками (Луима)</option>
           <option value = "nodiacritics">Без диакритиков (Чернецов)</option>
+          <option value = "strict">C диакритиками (Луима)</option>
         </select>
       </label>
       <input type="submit" value="Парсить" name="file">
     </form>
     <label for="exportName">Введите имя файла</label><br>
-    <input id="exportName" placeholder="имя xslx файла"><br>
-    <button id = "save">Сохранить как xslx...</button>
+    <input id="exportName" placeholder="имя csv файла">
+    <!--<label for="rewrite">Перезаписать ли файл?</label>
+    <input type="checkbox" id ="rewrite"><br>-->
+    <button id = "save">Сохранить как csv...</button>
     <br><br>
     <input id="tempName" placeholder="Имя временного файла"><br>
-    <button id = "save_temp">Сохранить временный файл</button><br><br>
+    <button id = "save_temp" class="save_temp">Сохранить временный файл</button>
+    <!--<label for="rewrite_temp">Перезаписать ли временный файл?</label>
+    <input type="checkbox" id ="rewrite_temp"><br><br>-->
     <label for="open_temp">Загрузить таблицу...</label><br>
     <input type="file" id="open_temp">
     <main id="main">

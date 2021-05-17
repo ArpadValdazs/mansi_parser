@@ -8,3 +8,17 @@
 td {
     border: 1px solid cadetblue;
 }
+button{
+    background-color: azure;
+    border: 1px solid black;
+    padding: 5px;
+    transition: ease-in-out 70ms;
+}
+button:hover{
+    background-color: bisque;
+    transition: ease-in-out 70ms;
+}
+.save_temp{
+    margin-bottom: 5px;
+    margin-top: 5px;
+}

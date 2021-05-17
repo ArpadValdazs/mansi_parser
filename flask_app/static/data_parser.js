@@ -67,8 +67,20 @@ parser = function(fetchedData, rowKey = null){
 	})
 	// Вносим данные, чтобы потом при парсинге отдельных строк сравнивать, и отправлять
 	// только те значения, которые необходимы, и затем встраивать их обратно
+	// if($("head").children("meta[name=description]").length > 0){
+	// 	$("meta[name=description]").remove()
+	// }
+	// let mode = $("#mode").val()
+	// let text = $("#filename").val()
+	// let toMeta = "mode: "+ mode+"filename: " + text
+	// let meta_array = []
+	// meta_array.push('<meta name = "description" content = "')
+	// 	meta_array.push(toMeta)
+	// meta_array.push('">')
+	// let meta = meta_array.join('')
+	// $("head").append(meta)
 	let data = gatherData()
-    console.log(data)
+    console.log("INITIAL: ", data)
 	initialValues.push(data)
 	startValues.push(data)
 }
@@ -78,21 +90,25 @@ document.querySelector("select").addEventListener('change', function (e){
 })
 
 $("#save").click(function(){
-	let filename = document.getElementById("exportName").value
-	console.log(filename)
-	let data = gatherData()
-	let obj = {}
-	for (let row = 0; row < data.length; row++){
-		console.log(row)
-		let elem = []
-		elem.push([data[row][0].join(' ')])
-		elem.push([data[row][1].join(' ')])
-		console.log(elem);
-		obj[row] = elem
+	if(confirm('Сохранить изменения?')){
+		let filename = document.getElementById("exportName").value
+		console.log(filename)
+		let data = gatherData()
+		let obj = {}
+		for (let row = 0; row < data.length; row++){
+			console.log(row)
+			let elem = []
+			elem.push([data[row][0].join(' ')])
+			elem.push([data[row][1].join(' ')])
+			console.log(elem);
+			obj[row] = elem
+		}
+		obj["filename"] = filename
+		let json = JSON.stringify(obj)
+		saver(json)
+	} else {
 	}
-	obj["filename"] = filename
-	let json = JSON.stringify(obj)
-	saver(json)
+
 })
 
 // Собирает информацию со всей таблицы
@@ -144,8 +160,8 @@ $("body").on('click', '#reparse', function(event){
 	console.log("num ", this.parentElement)
 	let arrayToSend = collectRow(num)
 	let newArray = []
-	this.parentElement[num]
-
+	// this.parentElement[num]
+	//
 	for (let i = 0; i < arrayToSend[0].length; i++){
 		let grammElem = document.getElementById(num+"_gramm").childNodes[i].nodeName
 		console.log(grammElem)
@@ -159,8 +175,10 @@ $("body").on('click', '#reparse', function(event){
 }).on('click', "#reparseHard", function (event){
 	if(confirm('Ты уверен, что хочешь перепарсить строку?')){
 		console.log(event.target.parentElement.parentElement.id)
+		//let meta = document.querySelector("meta[name=description]").content
+		//let meta_array = meta.split(" ")
+		//let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id, "mode": meta_array[1]})
 		let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id})
-
 		let response = fetch('http://127.0.0.1:5000/reparse_hard', {
 			method: 'POST',
 			mode: 'no-cors',
@@ -196,6 +214,27 @@ $(document).on('click', function(event){
 	// selector.setAttribute("id", event.target.selectedIndex)
 	//дальше надо через async await зафигарить отправку
 })
+document.addEventListener('keydown', function (event){
+	if(event.code === 'KeyR' && event.ctrlKey){
+		event.preventDefault()
+		if(confirm("Вы уверены, что хотите обновить страницу?")){
+			window.location.reload()
+		}
+	}
+	if(event.code === "F5"){
+			if (!event.ctrlKey){
+				if(confirm("Вы уверены, что хотите обновить страницу?")){
+				event.preventDefault()
+				window.location.reload()
+			}
+		}
+		if (event.ctrlKey){
+			if(confirm("Вы уверены, что хотите обновить страницу?")){
+				location.reload(true)
+			}
+		}
+	}
+})
 
 let saver = async function(jsonToSend){
 	let response = await fetch('http://127.0.0.1:5000/saver', {
@@ -225,6 +264,8 @@ let reparse = async function(arrayToSend, num){
 			j = j + 1
 		}
 	}
+	console.log("meta", document.querySelector("meta").content)
+	//obj["mode"]
 	console.log(arrayToSend)
 	console.log('obj ',obj)
 
@@ -356,6 +397,9 @@ let formRequest = async function(){
 		alert("Ты не ввёл имя файла!")
 		return;
 	}
+	if($("head").children("meta[name=description]").length > 0){
+		$("meta[name=description]").remove()
+	}
 	let elem = text.split("\\")
 	let sendo = JSON.stringify({
 		"parse_mode": mode,
@@ -374,6 +418,7 @@ let formRequest = async function(){
 		response.json().then((data) => {
 			//console.log(data)
 			parser(data)
+			$("head").append("<meta name=description content='mode: "+mode+" filename: "+text+"'>")
 		});
 	})
 
@@ -399,23 +444,29 @@ $("#parse_file").submit(function(event){
 })
 
 $("#save_temp").click(async function (event){
-	let table = document.getElementById('main').innerHTML
-	let fileName = document.getElementById('tempName').value
-	//console.log(table.toString())
-	let sendo = JSON.stringify({"text": table.toString(), "filename": fileName+".html"})
-	let response = await fetch('http://127.0.0.1:5000/create_temp', {
-		method: 'POST',
-		mode: 'no-cors',
-		headers: {
-			'Access-Control-Allow-Origin':'*',
-			'Content-Type': 'json'
-		},
-		body: sendo
-	}).then(response => {
-		response.json().then((data) => {
-			alert("ЁВТАТАНО ПОЗДОРОВТ!")
-		});
-	})
+	if(confirm('Сохранить изменения во ВРЕМЕННЫЙ ФАЙЛ?')){
+		let table = document.getElementById('main').innerHTML
+		let meta = document.querySelector('meta[name="description"]').content
+		console.log(meta)
+		let fileName = document.getElementById('tempName').value
+		//console.log(table.toString())
+		let sendo = JSON.stringify({"text": meta+table.toString(), "filename": fileName+".html"})
+		let response = await fetch('http://127.0.0.1:5000/create_temp', {
+			method: 'POST',
+			mode: 'no-cors',
+			headers: {
+				'Access-Control-Allow-Origin':'*',
+				'Content-Type': 'json'
+			},
+			body: sendo
+		}).then(response => {
+			response.json().then((data) => {
+				alert("ЁВТАТАНО ПОЗДОРОВТ!")
+			});
+		})
+	} else {
+	}
+
 })
 
 $("#open_temp").click(function (event){
@@ -424,6 +475,7 @@ $("#open_temp").click(function (event){
 		let sendo = JSON.stringify({
 			"filename": elem[2]
 		})
+		console.log(sendo)
 		//console.log(event.target.value)
 		let response = await fetch('http://127.0.0.1:5000/get_file', {
 			method: 'POST',
@@ -434,8 +486,25 @@ $("#open_temp").click(function (event){
 			},
 			body: sendo
 		}).then(response => {
-			response.text().then((data) => {
-				document.getElementById('main').innerHTML = data
+			response.text().then((arrived_data) => {
+				console.log(arrived_data.indexOf("<"))
+				let data_array = []
+				let meta_array = []
+				for (let i = arrived_data.indexOf("<"); i < arrived_data.length; i++){
+					data_array.push(arrived_data[i])
+				}
+				meta_array.push('<meta name = "description" content = "')
+				for (let i = 0; i < arrived_data.indexOf("<")-7; i++){
+					meta_array.push(arrived_data[i])
+				}
+				meta_array.push('">')
+				let data = data_array.join('')
+				let meta = meta_array.join('')
+				$("head").append(meta)
+				console.log(data)
+				console.log(meta)
+				$("main").empty().append(data)
+				//$("main")
 				let selector = document.getElementsByTagName('select')
 				for (let i = 1; i < selector.length; i++) {
 					for(let j = 0; j < selector[i].length; j++) {
@@ -447,8 +516,9 @@ $("#open_temp").click(function (event){
 				}
 				let new_data = gatherData()
 				initialValues.push(new_data)
-				//console.log(new_data)
+				console.log(new_data)
 			});
 		})
-	})
+	}, {once: true})
+
 })

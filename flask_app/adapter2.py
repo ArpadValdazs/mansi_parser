@@ -5,7 +5,7 @@ import json
 from orph_corrector import init_function
 
 last_array = []
-mode = []
+mode = ["nodiacritics"]
 initial_string = []
 
 # wordform.gloss = STEM+MORPH+MORPH...
@@ -24,20 +24,24 @@ def createParser(parse_mode):
 
 def call_adapter(filename, parse_mode):
     last_array.clear()
+    if len(mode) > 0:
+        mode.clear()
     mode.append(parse_mode)
+    initial_string.clear()
     # print("CALLED: \n\n", filename, " ", parse_mode)
     a = createParser(parse_mode)
     text = init_function(filename, "chern")
     # print("CORR: \n\n", text)
     response = text_splitter(text, a)
     # print("GOT: \n\n", response)
+    print("KLLLLKLKLK", initial_string)
     finish = print_file(response)
     return finish
 
 def start_analyze_2(word, a):
     # print("предложение", word)
     analyses = a.analyze_words(word)
-    # print(analyses)
+    print(analyses)
     return analyze(analyses, a)
 
 def analyze(analyses, a):
@@ -186,7 +190,7 @@ def saveFile(data):
         os.chdir('MorphParser/flask_app')
     if os.getcwd() == "C:\\":
         os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
-    with open(filename+".xlsx", "w", encoding="utf-8") as fout:
+    with open(filename+".csv", "w", encoding="utf-16") as fout:
         fout.write('№\tgramm\tgloss\r\n')
         for i in range(len(data)-1):
             print(i)
@@ -197,9 +201,11 @@ def saveFile(data):
                     print(elem)
                     fout.write(elem+'\t')
                 else:
+                    print(row[0])
                     fout.write(row[0] + '\t')
             i += 1
             fout.write('\n')
+    fout.close()
     print(os.getcwd())
     os.chdir("../../")
     print(os.getcwd())
@@ -209,7 +215,7 @@ def find_file(data):
         os.chdir('MorphParser/flask_app')
     if os.getcwd() == "C:\\":
         os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
-    print(os.getcwd())
+    print("[", os.getcwd(), "] ", data["filename"])
     with open(data["filename"], "r", encoding="utf-8") as fout:
         os.chdir("../../")
         return fout.read()
@@ -219,16 +225,18 @@ def save_temp(data):
         os.chdir('MorphParser/flask_app')
     if os.getcwd() == "C:\\":
         os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
-    print(os.getcwd())
+    print(os.getcwd(), data["filename"])
     with open(data["filename"], "w", encoding="utf-8") as fout:
         fout.write(data["text"])
         os.chdir("../../")
 
 def hard_adapter(num):
-    # print("init ", initial_string)
+    #допилить, когда человек начинает работать со старым файлом
+    print("init ", initial_string)
     last_array.clear()
     print("initthis ", initial_string[int(num["number"])])
     parse_mode = mode[0]
+    print("mode ", mode)
     a = createParser(parse_mode)
     result = split_sentence([initial_string[int(num["number"])]], a)
     response = print_file(result)
