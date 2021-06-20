@@ -3,19 +3,21 @@ let startValues = []
 let indexes = []
 
 parser = function(fetchedData, rowKey = null){
+	console.log("FETHCED", fetchedData)
 	let items = []
 	if (rowKey !== null){
 		let obj = {}
 		obj[rowKey] = fetchedData[0]
 		// fetchedData.key = rowKey
-		console.log(fetchedData)
-		console.log("rowkey ", obj)
-		console.log("keys ", Object.keys(fetchedData))
+
+		//console.log(fetchedData)
+		//console.log("rowkey ", obj)
+		//console.log("keys ", Object.keys(fetchedData))
 		fetchedData = obj
 		// console.log("value ", Object.value(fetchedData))
 	}
 	$.each(fetchedData, function (key, val){
-	    console.log(val)
+	    //console.log(val)
 		if (rowKey !== null){
 			let initKey = key
 			// как-то нужно заменить ключ
@@ -28,19 +30,25 @@ parser = function(fetchedData, rowKey = null){
 			$("#"+key).append("<td id="+key+'td'+">"+key+"</td>")
 			$("#"+key).append("<td id="+key+"><button id=reparse>reparse</button></td>")
 		}
-		console.log("KEY ", key)
+		//console.log("KEY ", key)
 		//key - number of sentence
 		$.each(val[0], function (key1, val1){
 			//key1 - displays "gramm" or "trans" strings
-            console.log(key, " ", key1)
-			$("#"+key).append("<td id="+key+'_'+key1+"></td>")
-            console.log($("#"+key+'_'+key1))
+            //console.log(key, " ", key1)
+
+            console.log($("#"+key)[0].nodeName)
+            console.log($("#"+key)[0])
+            if($("#"+key)[0].nodeName=="TR"){
+            	$("#"+key).append("<td id="+key+'_'+key1+"></td>")
+            	}
+            //console.log($("#"+key+'_'+key1))
 			$.each(val1, function (key2, val2){
 				//key2 - displays all the objects with compounds key2: {compound}
 				$.each(val2, function (key3, val3){
 					if(val3.length===1){
 						$.each(val3, function (key4, val4) {
 							$.each(val4, function (key5, val5) {
+								console.log("key ", key, "key1 ", key1, "val5 ", val5)
 								if(val5.indexOf("(??)")+1){
 									val5 = val5.substr(0, val5.length-4)
 									$("#"+key+"_"+key1).append('<div class = "text_block" id = "text_block" contenteditable="true"><span class = "notfound">'+val5+'</span></div>')
@@ -53,15 +61,19 @@ parser = function(fetchedData, rowKey = null){
 						})
 					}
 					if(val3.length>1){
+
 						$("#"+key+"_"+key1).append("<select id="+key+"_"+key1+"_"+key3+"></select>")
 						$.each(val3, function (key4, val4) {
 							$.each(val4, function (key5, val5) {
+								console.log("key ", key, "key1 ", key1, "val5 ", val5)
 								$("#"+key+"_"+key1+"_"+key3).append("<option>"+val5+"</option>")
 							})
 						})
 					}
 				})
 			})
+
+			
 		})
 		$("#"+key).append("<td id="+key+"_button><button id=reparseHard>reparse hard!</button></td>")
 	})
@@ -92,7 +104,7 @@ document.querySelector("select").addEventListener('change', function (e){
 $("#save").click(function(){
 	if(confirm('Сохранить изменения?')){
 		let filename = document.getElementById("exportName").value
-		console.log(filename)
+		//console.log(filename)
 		let data = gatherData()
 		let obj = {}
 		for (let row = 0; row < data.length; row++){
@@ -100,7 +112,7 @@ $("#save").click(function(){
 			let elem = []
 			elem.push([data[row][0].join(' ')])
 			elem.push([data[row][1].join(' ')])
-			console.log(elem);
+			//console.log(elem);
 			obj[row] = elem
 		}
 		obj["filename"] = filename
@@ -156,8 +168,8 @@ let collectRow = function(num){
 
 $("body").on('click', '#reparse', function(event){
 	let num = this.parentElement.id
-	console.log("num ", num)
-	console.log("num ", this.parentElement)
+	//console.log("num ", num)
+	//console.log("num ", this.parentElement)
 	let arrayToSend = collectRow(num)
 	let newArray = []
 	// this.parentElement[num]
@@ -169,7 +181,7 @@ $("body").on('click', '#reparse', function(event){
 			arrayToSend[0][i] = initialValues[0][num][0][i]
 		}
 	}
-	console.log(newArray)
+	//console.log(newArray)
 	reparse(arrayToSend, num)
 	//дальше надо через async await зафигарить отправку
 }).on('click', "#reparseHard", function (event){
@@ -283,7 +295,6 @@ let reparse = async function(arrayToSend, num){
 			inputData(data, num)
 		});
 	})
-
 }
 
 let inputData = function (data, num){

@@ -4,19 +4,21 @@ import re
 diacritics = ["ō", "ē", "ū", "ā", 'ī']
 letters = ["o", "e", "u", "a", "i"]
 
-chernetsov = ["ɧ", "ь", "ņ", "ꞩ", "t̩" "l̩", "ś", "h", "H", "Ņ", "Ļ", "Ś", "A", "E", "I", "K", "L", "M", "N", "O", "P", "S", "T", "U", "R", "W", "V", "v", "y"]
-proj_orph = ["ɣ", "ə", "n'", "ɕ", "t'" "l'", "ɕ", "x", "x", "n'", "l'", "ɕ", "a", "e", "i", "k", "l", "m", "n", "o", "p", "s", "t", "u", "r", "w", "w", "w", "u"]
+chernetsov = ["ɧ", "ь", "ņ", "ꞩ", "t̩" "l̩", "ś", "h", "H", "Ņ", "Ļ", "Ś", "A", "E", "I", "K", "L", "M", "N", "O", "P", "S", "T", "U", "R", "W", "V", "v", "y", "J"]
+proj_orph = ["ɣ", "ə", "n'", "ɕ", "t'" "l'", "ɕ", "x", "x", "n'", "l'", "ɕ", "a", "e", "i", "k", "l", "m", "n", "o", "p", "s", "t", "u", "r", "w", "w", "w", "u", "j"]
 
 def corrector(text, type):
     symbols_array = []
     new_text = ""
     text = text.replace("n̩", "n'")
+    text = text.replace("n̩̩", "n'")
     text = text.replace("l̩", "l'")
     text = text.replace("t̩", "t'")
+    text = text.replace("k̩", "k")
     text = text.replace("Ņ", "n'")
     text = text.replace("Ļ", "l'")
     text = text.replace("Ț", "t'")
-
+    text = text.replace("Ꞩ", "ɕ'")
     text = text.replace("\u030A", "")
     text = text.replace("\u0022", "")
     text = text.replace("=", " ")
