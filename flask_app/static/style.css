@@ -2,6 +2,11 @@
     display: inline-block;
     padding-right: 3px;
 }
+.comment_block{
+    display: inline-block;
+    padding-right: 3px;
+    width: 300px;
+}
 .notfound {
     color: crimson;
 }

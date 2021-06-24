@@ -41,8 +41,8 @@ def sentence():
 @app.route('/saver', methods = ['GET', 'POST'])
 def saver():
     file = request.get_json("word")
-    saveFile(file)
-    resp = make_response({"success": "successed"})
+    result = saveFile(file)
+    resp = make_response({"success": result})
     resp.headers['Content-Type'] = "application/json"
     return resp
 
@@ -59,8 +59,8 @@ def get_file():
 def create_temp():
     file = request.get_json("link")
     print(file)
-    save_temp(file)
-    resp = make_response({"response": "Файл добавлен!"})
+    response = save_temp(file)
+    resp = make_response({"response": response})
     resp.headers['Content-Type'] = "application/json"
     return resp
 

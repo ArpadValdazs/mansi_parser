@@ -35,11 +35,12 @@ def corrector(text, type):
                     text = text.replace(text[i], proj_orph[j])
     return text
 
-def parser(filename, mode):
+def parser(filename_in, mode):
     data_file = []
-    #os.chdir("texts")
-    #os.chdir("40")
-    filename='C:\\Users\\Пользователь\\MorphParser\\flask_app/texts/40/'+filename
+    os.chdir("texts")
+    print(os.getcwd())
+    filename = os.getcwd()+"/"+filename_in
+    print(filename)
 
     # Открыли, прочитали, получили список
     with open(filename, 'r', encoding="utf-8") as read_file:
@@ -47,6 +48,7 @@ def parser(filename, mode):
             data_file.append(line.strip('\n'))
     string = "\n".join(data_file)
     prepared_text = corrector(string, mode)
+    os.chdir("../")
     return(prepared_text)
 
 

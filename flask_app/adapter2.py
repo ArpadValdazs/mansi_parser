@@ -28,7 +28,7 @@ def call_adapter(filename, parse_mode):
         mode.clear()
     mode.append(parse_mode)
     initial_string.clear()
-    # print("CALLED: \n\n", filename, " ", parse_mode)
+    print("CALLED: \n\n1)", filename, " 2)", parse_mode)
     a = createParser(parse_mode)
     text = init_function(filename, "chern")
     # print("CORR: \n\n", text)
@@ -51,6 +51,7 @@ def analyze(analyses, a):
         prepared_glosses = []
         prepared_morphs = []
         for wordform in ana:
+            print("WF\n\n\n ", wordform)
             gloss = wordform.gloss
             if '$' in gloss:
                 # print("UAAA", gloss)
@@ -140,7 +141,9 @@ def print_file(array):
                                   } for compound in range(len(array[combination][1]))],
                             }]
              for combination in range(len(array))}
-    os.chdir("../../")
+    print(os.getcwd())
+    #os.chdir("../../")
+    print(os.getcwd())
     return(dict2)
 
 def split_sentence(sentence_array, a):
@@ -186,49 +189,86 @@ def sentence_adapter(word):
 def saveFile(data):
     filename = data["filename"]
     print(os.getcwd())
-    if os.getcwd() == "C:\\Users\\Пользователь":
-        os.chdir('MorphParser/flask_app')
-    if os.getcwd() == "C:\\":
-        os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
-    with open(filename+".csv", "w", encoding="utf-16") as fout:
-        fout.write('№\tgramm\tgloss\r\n')
-        for i in range(len(data)-1):
-            print(i)
-            fout.write(str(i)+'\t')
-            for row in data[str(i)]:
-                if "," in row[0]:
-                    elem = row[0].replace(",", "")
-                    print(elem)
-                    fout.write(elem+'\t')
-                else:
-                    print(row[0])
-                    fout.write(row[0] + '\t')
-            i += 1
-            fout.write('\n')
-    fout.close()
-    print(os.getcwd())
-    os.chdir("../../")
-    print(os.getcwd())
+    try:
+        os.chdir('final_files')
+    except FileNotFoundError:
+        return "Ошибка! Путь:" + os.getcwd()
+    # if os.getcwd() == "C:\\Users\\Пользователь":
+        # os.chdir('MorphParser/flask_app')
+    # if os.getcwd() == "C:\\":
+        # os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
+    try:
+        with open(filename+".csv", "w", encoding="utf-16") as fout:
+            fout.write('№\tgramm\tgloss\tcomment\r\n')
+            for i in range(len(data)-1):
+                print(i)
+                fout.write(str(i)+'\t')
+                for row in data[str(i)]:
+                    if "," in row[0]:
+                        elem = row[0].replace(",", "")
+                        print(elem)
+                        fout.write(elem+'\t')
+                    else:
+                        print(row[0])
+                        fout.write(row[0] + '\t')
+                i += 1
+                fout.write('\n')
+        fout.close()
+        print(os.getcwd())
+        os.chdir("../")
+        print(os.getcwd())
+        return "ЁВТАТАНО ПОЗДОРОВТ!!!"
+    except OSError:
+        os.chdir("../")
+        return "Люльсаӈ вāравес! Сусхати, тамле файл наме хансуӈкве ат рōви "
 
 def find_file(data):
-    if os.getcwd() == "C:\\Users\\Пользователь":
-        os.chdir('MorphParser/flask_app')
-    if os.getcwd() == "C:\\":
-        os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
+    # if os.getcwd() == "C:\\Users\\Пользователь":
+    try:
+        os.chdir('temps')
+    except FileNotFoundError:
+        return "Ошибка! Путь:" + os.getcwd()
+    # if os.getcwd() == "C:\\":
+        # os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
     print("[", os.getcwd(), "] ", data["filename"])
-    with open(data["filename"], "r", encoding="utf-8") as fout:
-        os.chdir("../../")
-        return fout.read()
+    try:
+        with open(data["filename"], "r", encoding="utf-8") as fout:
+
+            print("[", os.getcwd(), "] ", data["filename"])
+            text = fout.read()
+            print(text)
+            elem = text.split("<", 1)[0].partition("\n")[0].split(": ")
+            mode = elem[1].split(" ")[0].lstrip()
+            filename = elem[2].split("\\")[2]
+            print("elem", filename, " ", mode)
+            os.chdir("../")
+            call_adapter(filename, mode)
+            #line = fout.readline()
+            #print(line.split(" "))
+            return text
+    except:
+        os.chdir("../")
+        return "Люльсаӈ вāравес! Ат рōвнэ лёӈх"
 
 def save_temp(data):
-    if os.getcwd() == "C:\\Users\\Пользователь":
-        os.chdir('MorphParser/flask_app')
-    if os.getcwd() == "C:\\":
-        os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
+    try:
+        os.chdir('temps')
+    except FileNotFoundError:
+        return "Ошибка! Путь:" + os.getcwd()
+    #if os.getcwd() == "C:\\Users\\Пользователь":
+        #os.chdir('MorphParser/flask_app')
+    #if os.getcwd() == "C:\\":
+        #os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
     print(os.getcwd(), data["filename"])
-    with open(data["filename"], "w", encoding="utf-8") as fout:
-        fout.write(data["text"])
-        os.chdir("../../")
+    try:
+        with open(data["filename"], "w", encoding="utf-8") as fout:
+            fout.write(data["text"])
+            os.chdir("../")
+            print(os.getcwd(), data["filename"])
+            return "Ёмасыг вāравес!"
+    except:
+        os.chdir("../")
+        return "Люльсаӈ вāравес! Ат рōвнэ лёӈх"
 
 def hard_adapter(num):
     #допилить, когда человек начинает работать со старым файлом
@@ -242,5 +282,6 @@ def hard_adapter(num):
     response = print_file(result)
     print("response", response)
     return response
+
 
 

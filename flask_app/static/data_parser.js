@@ -24,6 +24,7 @@ parser = function(fetchedData, rowKey = null){
 			$("#"+key+"_gramm").remove()
 			$("#"+key+"_trans").remove()
 			$("#"+key+"_button").remove()
+			$("#"+key+"_comment").remove()
 			key = initKey
 		} else {
 			$("#tbody").append("<tr id="+key+"></tr>")
@@ -36,11 +37,9 @@ parser = function(fetchedData, rowKey = null){
 			//key1 - displays "gramm" or "trans" strings
             //console.log(key, " ", key1)
 
-            console.log($("#"+key)[0].nodeName)
-            console.log($("#"+key)[0])
-            if($("#"+key)[0].nodeName=="TR"){
-            	$("#"+key).append("<td id="+key+'_'+key1+"></td>")
-            	}
+            //console.log($("#"+key)[0].nodeName)
+            //console.log($("#"+key)[0])
+            $("#"+key).append("<td id="+key+'_'+key1+"></td>")
             //console.log($("#"+key+'_'+key1))
 			$.each(val1, function (key2, val2){
 				//key2 - displays all the objects with compounds key2: {compound}
@@ -48,7 +47,7 @@ parser = function(fetchedData, rowKey = null){
 					if(val3.length===1){
 						$.each(val3, function (key4, val4) {
 							$.each(val4, function (key5, val5) {
-								console.log("key ", key, "key1 ", key1, "val5 ", val5)
+								//console.log("key ", key, "key1 ", key1, "val5 ", val5)
 								if(val5.indexOf("(??)")+1){
 									val5 = val5.substr(0, val5.length-4)
 									$("#"+key+"_"+key1).append('<div class = "text_block" id = "text_block" contenteditable="true"><span class = "notfound">'+val5+'</span></div>')
@@ -65,7 +64,7 @@ parser = function(fetchedData, rowKey = null){
 						$("#"+key+"_"+key1).append("<select id="+key+"_"+key1+"_"+key3+"></select>")
 						$.each(val3, function (key4, val4) {
 							$.each(val4, function (key5, val5) {
-								console.log("key ", key, "key1 ", key1, "val5 ", val5)
+								//console.log("key ", key, "key1 ", key1, "val5 ", val5)
 								$("#"+key+"_"+key1+"_"+key3).append("<option>"+val5+"</option>")
 							})
 						})
@@ -75,6 +74,7 @@ parser = function(fetchedData, rowKey = null){
 
 			
 		})
+		$("#"+key).append('<td id='+key+'_comment><div class = "comment_block" id = "comment_block" contenteditable="true"></td>')
 		$("#"+key).append("<td id="+key+"_button><button id=reparseHard>reparse hard!</button></td>")
 	})
 	// Вносим данные, чтобы потом при парсинге отдельных строк сравнивать, и отправлять
@@ -109,10 +109,13 @@ $("#save").click(function(){
 		let obj = {}
 		for (let row = 0; row < data.length; row++){
 			console.log(row)
+			console.log(data[row][2])
 			let elem = []
-			elem.push([data[row][0].join(' ')])
-			elem.push([data[row][1].join(' ')])
-			//console.log(elem);
+			for (let i = 0; i < 2; i++){
+				elem.push([data[row][i].join(' ')])
+			}
+			elem.push([data[row][2]])
+			console.log("elem: ", elem);
 			obj[row] = elem
 		}
 		obj["filename"] = filename
@@ -131,6 +134,7 @@ let gatherData = function (){
 		let array = collectRow(row.childNodes[0].innerHTML)
 		tableData.push(array)
 	}
+	console.log(tableData)
 	return tableData
 }
 
@@ -141,10 +145,11 @@ let collectRow = function(num){
 	let transArray = []
 	let grammtable = document.getElementById(grammString).childNodes
 	let transtable = document.getElementById(transString).childNodes
-	//console.log('grammtable: ', grammtable)
+	let comment = document.getElementById(num+"_comment").innerText
+	// console.log('comment: ', comment)
 	for (let node of grammtable){
 		if (node.nodeName === 'DIV') {
-			grammArray.push(node.innerText)
+			grammArray.push(node.innerText.replace(/^(?=\n)$|^\s*|\s*$|\n\n + /gm, ""))
 		}
 		if (node.nodeName === 'SELECT') {
 			// if (mode === "createTable"){
@@ -154,7 +159,7 @@ let collectRow = function(num){
 	}
 	for (let node of transtable){
 		if (node.nodeName === 'DIV') {
-			transArray.push(node.innerText)
+			transArray.push(node.innerText.replace(/^(?=\n)$|^\s*|\s*$|\n\n + /gm, ""))
 		}
 		if (node.nodeName === 'SELECT') {
 			// if (mode === "createTable"){
@@ -163,7 +168,7 @@ let collectRow = function(num){
 		}
 	}
 	//console.log(grammArray, transArray)
-	return [grammArray,transArray]
+	return [grammArray, transArray, comment]
 }
 
 $("body").on('click', '#reparse', function(event){
@@ -176,7 +181,7 @@ $("body").on('click', '#reparse', function(event){
 	//
 	for (let i = 0; i < arrayToSend[0].length; i++){
 		let grammElem = document.getElementById(num+"_gramm").childNodes[i].nodeName
-		console.log(grammElem)
+		//console.log(grammElem)
 		if(grammElem === 'SELECT'){
 			arrayToSend[0][i] = initialValues[0][num][0][i]
 		}
@@ -186,7 +191,7 @@ $("body").on('click', '#reparse', function(event){
 	//дальше надо через async await зафигарить отправку
 }).on('click', "#reparseHard", function (event){
 	if(confirm('Ты уверен, что хочешь перепарсить строку?')){
-		console.log(event.target.parentElement.parentElement.id)
+		//console.log(event.target.parentElement.parentElement.id)
 		//let meta = document.querySelector("meta[name=description]").content
 		//let meta_array = meta.split(" ")
 		//let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id, "mode": meta_array[1]})
@@ -218,7 +223,7 @@ $(document).on('click', function(event){
 				event.target.childNodes[i].id = ""
 			}
 			if(event.target.childNodes)
-				event.target.childNodes[event.target.selectedIndex].id = event.target.selectedIndex
+				event.target.childNodes[event.target.selectedIndex].id = event.target.selectedIndex + "_checked"
 		})
 	}
 
@@ -260,7 +265,7 @@ let saver = async function(jsonToSend){
 	}).then(response => {
 		console.log(response)
 		response.json().then((data) => {
-			alert("ЁВТАТАНО ПОЗДОРОВТ!")
+			alert(data["success"])
 		});
 	})
 }
@@ -268,6 +273,7 @@ let saver = async function(jsonToSend){
 let reparse = async function(arrayToSend, num){
 	let obj = {}
 	let j = 0
+	console.log(arrayToSend)
 	console.log(initialValues[0][num][0])
 	for (let i = 0; i<initialValues[0][num][0].length; i++){
 		if (initialValues[0][num][0][i] !== arrayToSend[0][i]){
@@ -351,6 +357,7 @@ let inputData = function (data, num){
 		if (node.id === num+'_gramm') {
 			let sentence = node.childNodes
 			for (let i = 0; i<indexes.length; i++){
+				console.log("index: ", indexes, "gramm: ", gramm)
 				if(gramm[i].length===1){
 					sentence[indexes[i]].innerHTML = gramm[i][0]
 				} else {
@@ -472,7 +479,8 @@ $("#save_temp").click(async function (event){
 			body: sendo
 		}).then(response => {
 			response.json().then((data) => {
-				alert("ЁВТАТАНО ПОЗДОРОВТ!")
+				console.log(data["response"])
+				alert(data["response"])
 			});
 		})
 	} else {
@@ -505,7 +513,7 @@ $("#open_temp").click(function (event){
 					data_array.push(arrived_data[i])
 				}
 				meta_array.push('<meta name = "description" content = "')
-				for (let i = 0; i < arrived_data.indexOf("<")-7; i++){
+				for (let i = 0; i < arrived_data.indexOf("<"); i++){
 					meta_array.push(arrived_data[i])
 				}
 				meta_array.push('">')
