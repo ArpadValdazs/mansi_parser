@@ -252,7 +252,14 @@ document.addEventListener('keydown', function (event){
 		}
 	}
 })
-
+/*
+window.onbeforeunload = function (e) {
+	let e = e || window.event;
+	if (e) {
+		alert("Мāкыӈгысь таӈхēгын кон-минуӈкве?! Пуссын хот-ёрувлаве тах")
+	}
+}
+*/
 let saver = async function(jsonToSend){
 	let response = await fetch('http://127.0.0.1:5000/saver', {
 		method: 'POST',
@@ -520,6 +527,7 @@ $("#open_temp").click(function (event){
 				let data = data_array.join('')
 				let meta = meta_array.join('')
 				$("head").append(meta)
+
 				console.log(data)
 				console.log(meta)
 				$("main").empty().append(data)
