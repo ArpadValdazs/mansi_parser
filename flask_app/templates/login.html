@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-content="Expires" content="-1">
+    <link href="{{ url_for('static', filename= 'style.css') }}" rel="stylesheet" type="text/css">
+    <title>Parser results handler</title>
+  </head>
+  <body>
+    <form id = "login">
+      <label>Наӈ намын мāныр?</label><br>
+      <input type = "text" id = "text"/><br>
+      <label>Пасиртан лāтыӈ мāныр?</label><br>
+      <input type = "password" id = "password"/><br>
+      <input type = "submit" />
+    </form>
+    <script src = "{{ url_for('static', filename= 'node_modules/file-saver/src/FileSaver.js') }}"></script>
+    <script src="{{ url_for('static', filename= 'jquery-3.4.1.min.js') }}"></script>
+  	<script src = "{{ url_for('static', filename= 'login.js') }}"></script>
+  </body>
+</html>

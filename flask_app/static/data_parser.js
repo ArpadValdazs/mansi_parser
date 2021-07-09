@@ -1,8 +1,12 @@
+import {link} from './config.js'
+
+console.log(link)
+
 let initialValues = []
 let startValues = []
 let indexes = []
 
-parser = function(fetchedData, rowKey = null){
+let parser = function(fetchedData, rowKey = null){
 	console.log("FETHCED", fetchedData)
 	let items = []
 	if (rowKey !== null){
@@ -196,7 +200,7 @@ $("body").on('click', '#reparse', function(event){
 		//let meta_array = meta.split(" ")
 		//let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id, "mode": meta_array[1]})
 		let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id})
-		let response = fetch('http://127.0.0.1:5000/reparse_hard', {
+		let response = fetch(link+ '/reparse_hard', {
 			method: 'POST',
 			mode: 'no-cors',
 			headers: {
@@ -261,7 +265,7 @@ window.onbeforeunload = function (e) {
 }
 */
 let saver = async function(jsonToSend){
-	let response = await fetch('http://127.0.0.1:5000/saver', {
+	let response = await fetch(link+ '/saver', {
 		method: 'POST',
 		mode: 'no-cors',
 		headers: {
@@ -295,7 +299,7 @@ let reparse = async function(arrayToSend, num){
 	console.log('obj ',obj)
 
 	let sendo = JSON.stringify(obj)
-	let response = await fetch('http://127.0.0.1:5000/sentence', {
+	let response = await fetch(link+ '/sentence', {
 		method: 'POST',
 		mode: 'no-cors',
 		headers: {
@@ -431,7 +435,7 @@ let formRequest = async function(){
 		"text": elem[2]
 	})
 	//console.log("INFO ", sendo)
-	let response = await fetch('http://127.0.0.1:5000/parse', {
+	let response = await fetch(link+ '/parse', {
 		method: 'POST',
 		mode: 'no-cors',
 		headers: {
@@ -476,7 +480,7 @@ $("#save_temp").click(async function (event){
 		let fileName = document.getElementById('tempName').value
 		//console.log(table.toString())
 		let sendo = JSON.stringify({"text": meta+table.toString(), "filename": fileName+".html"})
-		let response = await fetch('http://127.0.0.1:5000/create_temp', {
+		let response = await fetch(link+ '/create_temp', {
 			method: 'POST',
 			mode: 'no-cors',
 			headers: {
@@ -503,7 +507,7 @@ $("#open_temp").click(function (event){
 		})
 		console.log(sendo)
 		//console.log(event.target.value)
-		let response = await fetch('http://127.0.0.1:5000/get_file', {
+		let response = await fetch(link+ '/get_file', {
 			method: 'POST',
 			mode: 'no-cors',
 			headers: {

@@ -1,13 +1,47 @@
-from flask import Flask, request, make_response, render_template
+from flask import Flask, request, make_response, render_template, redirect, url_for, jsonify
 from adapter2 import call_adapter, sentence_adapter, saveFile, find_file, save_temp, hard_adapter
+import mimetypes
 
+mimetypes.add_type('application/javascript', '.js')
 app = Flask(__name__)
+
+names = {
+        "id1": {"name": "Vasiliy", "password": "vang"},
+        "id2": {"name": "Kyrshka", "password": "selkup"},
+        "id3": {"name": "Daria", "password": "horaming"},
+         }
+registered = []
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    print(registered)
+    if len(registered) == 0:
+        return redirect(url_for('login'))
+    else:
+        return render_template('index.html')
 
-@app.route('/parse', methods = ['GET', 'POST'])
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/auth', methods = ['GET', 'POST'])
+def auth():
+    data = request.get_json("name")
+    for name in names:
+        print(names[name]["name"], ' ', data)
+        if data['name'] == names[name]["name"] and data['password'] == names[name]['password']:
+            registered.append(names[name]["name"])
+            registered.append(names[name]['password'])
+        else:
+            print("no!")
+    if len(registered) == 0:
+        resp = make_response({"Error": "Тамле хōтпа ат хōнтавес!"})
+        return resp
+    else:
+        return jsonify({"redirect": "/"})
+
+
+@app.route('/parse', methods=['GET', 'POST'])
 def parse():
     mode = request.get_json("mode")
     print(mode)
