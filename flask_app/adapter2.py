@@ -222,14 +222,12 @@ def saveFile(data):
         os.chdir("../")
         return "Люльсаӈ вāравес! Сусхати, тамле файл наме хансуӈкве ат рōви "
 
-def find_file(data):
-    # if os.getcwd() == "C:\\Users\\Пользователь":
+def find_file(data, username):
+    print("FINDFILE: [", os.getcwd(), "] ")
     try:
-        os.chdir('temps')
+        os.chdir('temp')
     except FileNotFoundError:
         return "Ошибка! Путь:" + os.getcwd()
-    # if os.getcwd() == "C:\\":
-        # os.chdir('C:/Users/Пользователь/MorphParser/flask_app')
     print("[", os.getcwd(), "] ", data["filename"])
     try:
         with open(data["filename"], "r", encoding="utf-8") as fout:

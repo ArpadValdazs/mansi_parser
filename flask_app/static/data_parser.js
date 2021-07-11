@@ -221,7 +221,8 @@ $("body").on('click', '#reparse', function(event){
 })
 
 $(document).on('click', function(event){
-	if(event.target.tagName === 'SELECT' && event.target.id !== "mode"){
+	if(event.target.tagName === 'SELECT' && event.target.parentElement.nodeName === "TD"){
+		console.log(event.target.parentElement)
 		event.target.addEventListener("change", function (){
 			for(let i = 0; i < event.target.childNodes.length; i++){
 				event.target.childNodes[i].id = ""
@@ -499,6 +500,7 @@ $("#save_temp").click(async function (event){
 
 })
 
+/*Эту функцию переработать так, чтобы она воспринимала файлы из компуктера*/
 $("#open_temp").click(function (event){
 	event.target.addEventListener("change", async function (){
 		let elem = event.target.value.split("\\")
@@ -537,7 +539,8 @@ $("#open_temp").click(function (event){
 				$("main").empty().append(data)
 				//$("main")
 				let selector = document.getElementsByTagName('select')
-				for (let i = 1; i < selector.length; i++) {
+				console.log("aaa", selector)
+				for (let i = 3; i < selector.length; i++) {
 					for(let j = 0; j < selector[i].length; j++) {
 						if(selector[i].childNodes[j].id !== ""){
 							selector[i].value = selector[i].childNodes[j].innerText
@@ -552,4 +555,84 @@ $("#open_temp").click(function (event){
 		})
 	}, {once: true})
 
+})
+
+/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+/*_______________НОВЫЕ ФУНКЦИИ___________________________*/
+/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+
+$("#loadFromServer").submit(function(event){
+	event.preventDefault()
+	let fileSelector = document.getElementById('fileList')
+	console.log("yyy", fileSelector.options)
+	for(let i=1; i<fileSelector.length; i++){
+		if (i == fileSelector.selectedIndex){
+			console.log(fileSelector.options[i].innerText)
+		}
+		console.log(fileSelector.selectedIndex)
+	}
+	console.log(fileSelector.selectedIndex)
+})
+
+$("#tempsFromServer").submit(async function(event){
+	console.log("kk")
+	event.preventDefault()
+	let tempSelector = document.getElementById('tempList')
+	console.log("yyy", tempSelector.options)
+	for(let i=1; i<tempSelector.length; i++){
+		if (i == tempSelector.selectedIndex){
+		let sendo = JSON.stringify({
+			"filename": tempSelector.options[i].innerText
+		})
+		console.log(sendo)
+		//console.log(event.target.value)
+		let response = await fetch(link+ '/get_file', {
+			method: 'POST',
+			mode: 'no-cors',
+			headers: {
+				'Access-Control-Allow-Origin':'*',
+				'Content-Type': 'json'
+			},
+			body: sendo
+		}).then(response => {
+			response.text().then((arrived_data) => {
+				console.log(arrived_data.indexOf("<"))
+				let data_array = []
+				let meta_array = []
+				for (let i = arrived_data.indexOf("<"); i < arrived_data.length; i++){
+					data_array.push(arrived_data[i])
+				}
+				meta_array.push('<meta name = "description" content = "')
+				for (let i = 0; i < arrived_data.indexOf("<"); i++){
+					meta_array.push(arrived_data[i])
+				}
+				meta_array.push('">')
+				let data = data_array.join('')
+				let meta = meta_array.join('')
+				$("head").append(meta)
+
+				console.log(data)
+				console.log(meta)
+				$("main").empty().append(data)
+				//$("main")
+				let selector = document.getElementsByTagName('select')
+				console.log("aaa", selector)
+				for (let i = 3; i < selector.length; i++) {
+					for(let j = 0; j < selector[i].length; j++) {
+						if(selector[i].childNodes[j].id !== ""){
+							selector[i].value = selector[i].childNodes[j].innerText
+							selector[i].childNodes[j]
+						}
+					}
+				}
+				let new_data = gatherData()
+				initialValues.push(new_data)
+				console.log(new_data)
+			});
+		})
+			console.log(tempSelector.options.innerText)
+		}
+		console.log(tempSelector.selectedIndex)
+	}
+	console.log(tempSelector.selectedIndex)
 })

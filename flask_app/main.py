@@ -1,14 +1,18 @@
 from flask import Flask, request, make_response, render_template, redirect, url_for, jsonify
 from adapter2 import call_adapter, sentence_adapter, saveFile, find_file, save_temp, hard_adapter
-import mimetypes
+from UI_model import show_texts, show_temp
+import mimetypes, os
 
 mimetypes.add_type('application/javascript', '.js')
 app = Flask(__name__)
 
+serverURL = os.getcwd()
+
 names = {
-        "id1": {"name": "Vasiliy", "password": "vang"},
+        "id1": {"name": "Vasiliy", "password": "vangin"},
         "id2": {"name": "Kyrshka", "password": "selkup"},
         "id3": {"name": "Daria", "password": "horaming"},
+        "id4": {"name": "Arpad", "password": "kxmermorzsovij"},
          }
 registered = []
 
@@ -19,6 +23,22 @@ def index():
         return redirect(url_for('login'))
     else:
         return render_template('index.html')
+
+@app.route('/get_text')
+def get_text():
+    #print("LOL0")
+    print(registered[0])
+    dirlist = show_texts(registered[0], serverURL)
+    #print("LOL3", dirlist)
+    resp = make_response({"response": dirlist})
+    #print(resp)
+    return resp
+
+@app.route('/get_temps')
+def get_temps():
+    dirlist = show_temp(registered[0], serverURL)
+    resp = make_response({"response": dirlist})
+    return resp
 
 @app.route('/login')
 def login():
@@ -84,7 +104,7 @@ def saver():
 def get_file():
     file = request.get_json("link")
     print(file)
-    file = find_file(file)
+    file = find_file(file, registered[0])
     resp = make_response(file)
     resp.headers['Content-Type'] = "application/html"
     return resp

@@ -10,6 +10,27 @@
     <title>Parser results handler</title>
   </head>
   <body>
+    <form id = "textFromServer">
+      <label>
+        Ваши файлы
+        <select id = "fileList" name = "List">
+          <option value = "0">Не выбрано</option>
+        </select>
+      </label>
+      <br>
+      <input type="submit" name="submit">
+    </form>
+    <form id = "tempsFromServer">
+      <label>
+        Ваши времеdнные файлы
+        <select id = "tempList">
+          <option value = "0">Не выбрано</option>
+        </select>
+      </label>
+      <br>
+      <input type="submit" name="submit">
+    </form>
+    <br><br><br>
     <form id = "parse_file">
       <input type="file" id="filename"/>
 
@@ -47,5 +68,7 @@
     <script type = "text/javascript" src="{{ url_for('static', filename= 'jquery-3.4.1.min.js') }}"></script>
     <script type = "module" src = "{{ url_for('static', filename= 'config.js') }}"></script>
   	<script type = "module" src = "{{ url_for('static', filename= 'data_parser.js') }}"></script>
+    <script type = "module" src = "{{ url_for('static', filename= 'show_data.js') }}"></script>
+
   </body>
 </html>
