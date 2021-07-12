@@ -561,13 +561,45 @@ $("#open_temp").click(function (event){
 /*_______________НОВЫЕ ФУНКЦИИ___________________________*/
 /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 
-$("#loadFromServer").submit(function(event){
+$("#textFromServer").submit(async function(event){
 	event.preventDefault()
+	console.log("aaa")
 	let fileSelector = document.getElementById('fileList')
 	console.log("yyy", fileSelector.options)
 	for(let i=1; i<fileSelector.length; i++){
 		if (i == fileSelector.selectedIndex){
 			console.log(fileSelector.options[i].innerText)
+
+	let mode = 'nodiacritics' // автоматизировать!
+	/*let text = fileSelector.options[i].innerText
+	//console.log(text)
+	if (text==="") {
+		alert("Ты не ввёл имя файла!")
+		return;
+	}
+	if($("head").children("meta[name=description]").length > 0){
+		$("meta[name=description]").remove()
+	}*/
+	let sendo = JSON.stringify({
+		"parse_mode": mode,
+		"text": fileSelector.options[i].innerText
+	})
+	//console.log("INFO ", sendo)
+	let response = await fetch(link+ '/parse', {
+		method: 'POST',
+		mode: 'no-cors',
+		headers: {
+			'Access-Control-Allow-Origin':'*',
+			'Content-Type': 'json'
+		},
+		body: sendo
+	}).then(response => {
+		response.json().then((data) => {
+			//console.log(data)
+			parser(data)
+			$("head").append("<meta name=description content='mode: "+mode+" filename: "+fileSelector.options[i].innerText+"'>")
+		});
+	})
 		}
 		console.log(fileSelector.selectedIndex)
 	}
