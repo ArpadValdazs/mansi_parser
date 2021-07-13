@@ -6,15 +6,12 @@ from UI_model import show_texts, show_temp
 # from wtforms.validators import DataRequired
 from werkzeug.utils import secure_filename
 import mimetypes, os
-from flask_login import LoginManager
 
 mimetypes.add_type('application/javascript', '.js')
 app = Flask(__name__)
 app.config['DB_FOLDER'] = '/database'
 app.config['TEXT_FOLDER'] = '/temp'
 app.config['TEMP_FOLDER'] = '/temp'
-
-# login_manager = LoginManager(app)
 
 serverURL = os.getcwd()
 
@@ -26,12 +23,6 @@ names = {
          }
 registered = []
 
-# class User(db.Model):
-#     __tablename__ = 'users'
-#     id = db.Column(db.Integer(), primary_key=True)
-#     username = db.Column(db.String(100), unique= True)
-#     password_hash = db.Column(db.String(100), nullable=False)
-
 @app.route('/')
 def index():
     print(registered)
@@ -39,6 +30,7 @@ def index():
         return redirect(url_for('login'))
     else:
         return render_template('index.html')
+
 
 @app.route('/get_text')
 def get_text():
