@@ -420,9 +420,27 @@ let inputData = function (data, num){
 
 
 let formRequest = async function(){
+	
 	let mode = $("#mode").val()
-	let text = $("#filename").val()
-	//console.log(text)
+	let file = $("#filename")
+	let formToSend = document.getElementById("parse_file")
+	let FormData = new formData(formToSend);
+	formData.append("file1", file.files[0], file.val());
+	console.log(text)
+	let response = await fetch(link+ '/upload_text', {
+		method: 'POST',
+		mode: 'no-cors',
+		headers: {
+			'Access-Control-Allow-Origin':'*',
+			'Content-Type': 'json'
+		},
+		body: sendo
+	}.then(response => {
+		response.json().then((data) => {
+			console.log(data)
+		});
+	}))}
+	/*
 	if (text==="") {
 		alert("Ты не ввёл имя файла!")
 		return;
@@ -450,9 +468,9 @@ let formRequest = async function(){
 			parser(data)
 			$("head").append("<meta name=description content='mode: "+mode+" filename: "+text+"'>")
 		});
-	})
+	})*/
 
-}
+
 
 
 // отправка данных парсеру
@@ -502,59 +520,7 @@ $("#save_temp").click(async function (event){
 
 /*Эту функцию переработать так, чтобы она воспринимала файлы из компуктера*/
 $("#open_temp").click(function (event){
-	event.target.addEventListener("change", async function (){
-		let elem = event.target.value.split("\\")
-		let sendo = JSON.stringify({
-			"filename": elem[2]
-		})
-		console.log(sendo)
-		//console.log(event.target.value)
-		let response = await fetch(link+ '/get_file', {
-			method: 'POST',
-			mode: 'no-cors',
-			headers: {
-				'Access-Control-Allow-Origin':'*',
-				'Content-Type': 'json'
-			},
-			body: sendo
-		}).then(response => {
-			response.text().then((arrived_data) => {
-				console.log(arrived_data.indexOf("<"))
-				let data_array = []
-				let meta_array = []
-				for (let i = arrived_data.indexOf("<"); i < arrived_data.length; i++){
-					data_array.push(arrived_data[i])
-				}
-				meta_array.push('<meta name = "description" content = "')
-				for (let i = 0; i < arrived_data.indexOf("<"); i++){
-					meta_array.push(arrived_data[i])
-				}
-				meta_array.push('">')
-				let data = data_array.join('')
-				let meta = meta_array.join('')
-				$("head").append(meta)
-
-				console.log(data)
-				console.log(meta)
-				$("main").empty().append(data)
-				//$("main")
-				let selector = document.getElementsByTagName('select')
-				console.log("aaa", selector)
-				for (let i = 3; i < selector.length; i++) {
-					for(let j = 0; j < selector[i].length; j++) {
-						if(selector[i].childNodes[j].id !== ""){
-							selector[i].value = selector[i].childNodes[j].innerText
-							selector[i].childNodes[j]
-						}
-					}
-				}
-				let new_data = gatherData()
-				initialValues.push(new_data)
-				console.log(new_data)
-			});
-		})
-	}, {once: true})
-
+	
 })
 
 /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/

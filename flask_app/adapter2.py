@@ -190,7 +190,7 @@ def saveFile(data):
     filename = data["filename"]
     print(os.getcwd())
     try:
-        os.chdir('final_files')
+        os.chdir('tables')
     except FileNotFoundError:
         return "Ошибка! Путь:" + os.getcwd()
     # if os.getcwd() == "C:\\Users\\Пользователь":
@@ -250,7 +250,7 @@ def find_file(data, username):
 
 def save_temp(data):
     try:
-        os.chdir('temps')
+        os.chdir('temp')
     except FileNotFoundError:
         return "Ошибка! Путь:" + os.getcwd()
     #if os.getcwd() == "C:\\Users\\Пользователь":

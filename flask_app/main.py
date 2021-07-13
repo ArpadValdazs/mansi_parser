@@ -1,20 +1,36 @@
 from flask import Flask, request, make_response, render_template, redirect, url_for, jsonify
 from adapter2 import call_adapter, sentence_adapter, saveFile, find_file, save_temp, hard_adapter
 from UI_model import show_texts, show_temp
+# from flask_wtf import FlaskForm
+# from wtforms import StringField
+# from wtforms.validators import DataRequired
+from werkzeug.utils import secure_filename
 import mimetypes, os
+from flask_login import LoginManager
 
 mimetypes.add_type('application/javascript', '.js')
 app = Flask(__name__)
+app.config['DB_FOLDER'] = '/database'
+app.config['TEXT_FOLDER'] = '/temp'
+app.config['TEMP_FOLDER'] = '/temp'
+
+# login_manager = LoginManager(app)
 
 serverURL = os.getcwd()
 
 names = {
-        "id1": {"name": "Vasiliy", "password": "vangin"},
+        "id1": {"name": "Vashka", "password": "vangin"},
         "id2": {"name": "Kyrshka", "password": "selkup"},
-        "id3": {"name": "Daria", "password": "horaming"},
+        "id3": {"name": "Dasha", "password": "horaming"},
         "id4": {"name": "Arpad", "password": "kxmermorzsovij"},
          }
 registered = []
+
+# class User(db.Model):
+#     __tablename__ = 'users'
+#     id = db.Column(db.Integer(), primary_key=True)
+#     username = db.Column(db.String(100), unique= True)
+#     password_hash = db.Column(db.String(100), nullable=False)
 
 @app.route('/')
 def index():
@@ -127,6 +143,13 @@ def reparse_hard():
     resp = make_response(response)
     resp.headers['Content-Type'] = "application/json"
     return resp
+
+@app.route('/upload_text', methods = ['GET', 'POST'])
+def upload_text():
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config["DB_FOLDER"]+registered[0]+app.config["TEXT_FOLDER"], filename))
+    return jsonify({"redirect": "/"})
 
 if __name__ == "__main__":
     app.run(debug=True)

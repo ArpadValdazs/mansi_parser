@@ -1,5 +1,7 @@
 import os
 
+# Надо взять по одному их, и разбросать по разным концам массива
+
 def show_texts(name, serverURL):
     print("1: ", os.getcwd())
     print("2: ", serverURL)
