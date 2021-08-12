@@ -27,3 +27,7 @@ button:hover{
     margin-bottom: 5px;
     margin-top: 5px;
 }
+.quitBox{
+    display: flex;
+    justify-content: flex-end;
+}

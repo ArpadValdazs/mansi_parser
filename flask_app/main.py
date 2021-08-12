@@ -1,6 +1,6 @@
-from flask import Flask, request, make_response, render_template, redirect, url_for, jsonify
+from flask import Flask, request, make_response, render_template, redirect, url_for, jsonify, session
 from adapter2 import call_adapter, sentence_adapter, saveFile, find_file, save_temp, hard_adapter
-from UI_model import show_texts, show_temp
+from UI_model import show_info
 # from flask_wtf import FlaskForm
 # from wtforms import StringField
 # from wtforms.validators import DataRequired
@@ -10,45 +10,53 @@ import mimetypes, os
 mimetypes.add_type('application/javascript', '.js')
 app = Flask(__name__)
 app.config['DB_FOLDER'] = '/database'
-app.config['TEXT_FOLDER'] = '/temp'
+app.config['TEXT_FOLDER'] = '/text'
 app.config['TEMP_FOLDER'] = '/temp'
+app.config['SECRET_KEY'] = 'bdaf4rsfdfdsf4wsdc4w445tyry6552we'
 
 serverURL = os.getcwd()
 
 names = {
-        "id1": {"name": "Vashka", "password": "vangin"},
-        "id2": {"name": "Kyrshka", "password": "selkup"},
-        "id3": {"name": "Dasha", "password": "horaming"},
-        "id4": {"name": "Arpad", "password": "kxmermorzsovij"},
+        "id1": {"name": "Truemansi", "password": "jomashotpa1956"},
          }
 registered = []
 
+
 @app.route('/')
 def index():
-    print(registered)
-    if len(registered) == 0:
+    print(session)
+    if len(session) == 0:
         return redirect(url_for('login'))
     else:
         return render_template('index.html')
 
 
-@app.route('/get_text')
-def get_text():
-    #print("LOL0")
-    print(registered[0])
-    dirlist = show_texts(registered[0], serverURL)
-    #print("LOL3", dirlist)
+# @app.route('/get_text')
+# def get_text():
+#     #print("LOL0")
+#     print(registered[0])
+#     dirlist = show_texts(session['username'], serverURL)
+#     #print("LOL3", dirlist)
+#     resp = make_response({"response": dirlist})
+#     #print(resp)
+#     return resp
+
+@app.route('/get_name')
+def get_name():
+    return make_response({"name: ": session['username']})
+
+@app.route('/get_info')
+def get_info():
+    dirlist = show_info(session['username'], serverURL)
     resp = make_response({"response": dirlist})
-    #print(resp)
     return resp
 
-@app.route('/get_temps')
-def get_temps():
-    dirlist = show_temp(registered[0], serverURL)
-    resp = make_response({"response": dirlist})
-    return resp
+@app.route('/kill_session')
+def kill_session():
+    session.pop('username', None)
+    return jsonify({"redirect": "/"})
 
-@app.route('/login')
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
     return render_template('login.html')
 
@@ -58,11 +66,10 @@ def auth():
     for name in names:
         print(names[name]["name"], ' ', data)
         if data['name'] == names[name]["name"] and data['password'] == names[name]['password']:
-            registered.append(names[name]["name"])
-            registered.append(names[name]['password'])
+            session['username'] = names[name]["name"]
         else:
             print("no!")
-    if len(registered) == 0:
+    if len(session) == 0:
         resp = make_response({"Error": "Тамле хōтпа ат хōнтавес!"})
         return resp
     else:
@@ -112,7 +119,7 @@ def saver():
 def get_file():
     file = request.get_json("link")
     print(file)
-    file = find_file(file, registered[0])
+    file = find_file(file, session['username'])
     resp = make_response(file)
     resp.headers['Content-Type'] = "application/html"
     return resp
@@ -140,7 +147,7 @@ def reparse_hard():
 def upload_text():
     file = request.files['file']
     filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config["DB_FOLDER"]+registered[0]+app.config["TEXT_FOLDER"], filename))
+    file.save(os.path.join(app.config["DB_FOLDER"]+session['username']+app.config["TEXT_FOLDER"], filename))
     return jsonify({"redirect": "/"})
 
 if __name__ == "__main__":

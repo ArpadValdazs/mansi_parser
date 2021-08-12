@@ -200,6 +200,7 @@ $("body").on('click', '#reparse', function(event){
 		//let meta_array = meta.split(" ")
 		//let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id, "mode": meta_array[1]})
 		let sendo = JSON.stringify({"number": event.target.parentElement.parentElement.id})
+		console.log(event.target.parentElement.parentElement.id)
 		let response = fetch(link+ '/reparse_hard', {
 			method: 'POST',
 			mode: 'no-cors',
@@ -212,6 +213,7 @@ $("body").on('click', '#reparse', function(event){
 			response.json().then((data) => {
 				parser(data, event.target.parentElement.parentElement.id)
 				console.log("joo")
+
 			});
 		})
 
@@ -633,4 +635,30 @@ $("#tempsFromServer").submit(async function(event){
 		console.log(tempSelector.selectedIndex)
 	}
 	console.log(tempSelector.selectedIndex)
+})
+
+/*НОВЫЕ ФУНКЦИИ*/
+
+$('#quit').click(async function(event){
+	if(confirm('Ты уверен, что хочешь хочешь выйти?!')){
+			let response = await fetch(link+ '/kill_session', {
+				method: 'GET',
+				mode: 'no-cors',
+				headers: {
+					'Access-Control-Allow-Origin':'*',
+					'Content-Type': 'json'
+				},
+			}).then(response => {
+				response.json().then((data) =>{
+					if (data.redirect) {
+						window.location.href = data.redirect
+					} else {
+						alert(data["Error"])
+					}
+				})
+			})
+		} else {
+			return 0
+		}
+ 
 })

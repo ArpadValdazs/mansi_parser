@@ -236,16 +236,20 @@ def find_file(data, username):
             text = fout.read()
             print(text)
             elem = text.split("<", 1)[0].partition("\n")[0].split(": ")
+            print(elem)
             mode = elem[1].split(" ")[0].lstrip()
-            filename = elem[2].split("\\")[2]
+            print(mode)
+            filename = elem[2]
+            #filename = elem[2].split("\\")[2]
             print("elem", filename, " ", mode)
             os.chdir("../")
             call_adapter(filename, mode)
-            #line = fout.readline()
-            #print(line.split(" "))
+            line = fout.readline()
+            print(line.split(" "))
             return text
     except:
         os.chdir("../")
+        print(os.getcwd())
         return "Люльсаӈ вāравес! Ат рōвнэ лёӈх"
 
 def save_temp(data):
